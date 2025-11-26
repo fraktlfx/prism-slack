@@ -1,7 +1,3 @@
-# -----------
-# Created by John Kesig while at Warm'n Fuzzy
-# Contact: john.d.kesig@gmail.com
-
 from functools import partial
 from Scripts.client.prism.api import API
 

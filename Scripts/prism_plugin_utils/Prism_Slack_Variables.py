@@ -1,13 +1,9 @@
-# -----------
-# Created by John Kesig while at Warm'n Fuzzy
-# Contact: john.d.kesig@gmail.com
-
 import os
 
 
 class Prism_Slack_Variables(object):
     def __init__(self, core, plugin):
-        self.version = "v2.0.16"
+        self.version = "v2.1.0"
         self.pluginName = "Slack"
         self.pluginType = "Custom"
         self.platforms = ["Windows"]

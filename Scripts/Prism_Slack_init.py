@@ -1,7 +1,3 @@
-# -----------
-# Created by John Kesig while at Warm'n Fuzzy
-# Contact: john.d.kesig@gmail.com
-
 import os
 import sys
 
@@ -13,7 +9,6 @@ from Scripts.prism_plugin_utils.Prism_Slack_externalAccess_Functions import (
     Prism_Slack_externalAccess_Functions,
 )
 from Scripts.client.prism.utils.publish_to_slack import PublishToSlack
-from Scripts.client.slack.slack_config import SlackConfig
 from Scripts.client.prism.api import API
 
 
