@@ -5,8 +5,8 @@
 </picture>  
   
 <div>
-<img src="https://img.shields.io/badge/Prism_Pipeline-2.0.17-mediumseagreen" alt="Prism Pipeline Version"> 
-<img src="https://img.shields.io/badge/Slack_Plugin-2.0.17-4A154B?logo=slack" alt="Slack Plugin Version">
+<img src="https://img.shields.io/badge/Prism_Pipeline-2.1.0-mediumseagreen" alt="Prism Pipeline Version"> 
+<img src="https://img.shields.io/badge/Slack_Plugin-2.1.0-4A154B?logo=slack" alt="Slack Plugin Version">
 </div>  
 <br>
   
@@ -23,7 +23,7 @@
 
 ## Introduction
 
-This is the Slack plugin for Prism-Pipeline 2.0
+This is the Slack plugin for Prism-Pipeline 2.1.0
 
 ## Requirements
 
