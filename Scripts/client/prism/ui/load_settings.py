@@ -43,7 +43,7 @@ def _set_options(origin):
 
 # Connect the events in the studio/project settings window
 def _connect_events(origin):
-    origin.b_slack_token.clicked.connect(lambda: _input_token(origin))
+    origin.b_slack_bot_token.clicked.connect(lambda: _input_token(origin))
     origin.cb_notify_user_pool.currentIndexChanged.connect(
         lambda index: _update_notify_user_pool(origin, index)
     )
@@ -51,7 +51,7 @@ def _connect_events(origin):
         lambda index: _update_notify_method(origin, index)
     )
 
-    origin.b_app_token.clicked.connect(lambda: _input_app_level_token(origin))
+    origin.b_slack_app_level_token.clicked.connect(lambda: _input_app_level_token(origin))
     origin.b_server.clicked.connect(lambda: ServerControls(pcore).toggle_server(origin))
     origin.b_reset_server.clicked.connect(
         lambda: ServerControls(pcore).gui_reset_server_status(origin)
@@ -63,11 +63,11 @@ def _input_token(origin):
     input_dialog = InputDialog(title="Enter your Slack Bot API Token")
     if input_dialog.exec_() == QDialog.Accepted:
         slack_token = input_dialog.get_input()
-        origin.le_slack_token.setText(slack_token)
+        origin.le_slack_bot_token.setText(slack_token)
 
         # Save the token to the config file
         config = SlackConfig(pcore).load_config(mode="studio")
-        config["slack"]["token"] = slack_token
+        config["slack"]["tokens"]["bot_token"] = slack_token
         SlackConfig(pcore).save_config_setting(config, mode="studio")
 
 
@@ -76,9 +76,9 @@ def _check_token(origin):
     token = API(pcore).get_access_token()
     
     if token == "":
-        origin.le_slack_token.setPlaceholderText("Enter your Slack API Token")
+        origin.le_slack_bot_token.setPlaceholderText("Input Bot Token --->")
     else:
-        origin.le_slack_token.setText(token)
+        origin.le_slack_bot_token.setText(token)
 
 
 # Add notification methods to the dropdown in the studio/project settings Slack window
@@ -146,10 +146,10 @@ def _input_app_level_token(origin):
     input_dialog = InputDialog(title="Enter your Slack App-Level Token")
     if input_dialog.exec_() == QDialog.Accepted:
         app_token = input_dialog.get_input()
-        origin.le_app_token.setText(app_token)
+        origin.le_slack_app_level_token.setText(app_token)
 
         config = SlackConfig(pcore).load_config(mode="studio")
-        config["slack"]["server"]["app_token"] = app_token
+        config["slack"]["tokens"]["app_token"] = app_token
         SlackConfig(pcore).save_config_setting(config, mode="studio")
 
 
@@ -158,8 +158,8 @@ def _check_app_level_token(origin):
     app_token = API(pcore).get_app_level_token()
 
     if "app_token" != "":
-        origin.le_app_token.setText(app_token)
+        origin.le_slack_app_level_token.setText(app_token)
 
     else:
-        origin.le_app_token.setPlaceholderText("Enter your Slack App-Level Token")
+        origin.le_slack_app_level_token.setPlaceholderText("Enter your Slack App-Level Token")
         return
