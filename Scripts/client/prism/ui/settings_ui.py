@@ -1,4 +1,5 @@
 import os
+import webbrowser
 from pathlib import Path
 
 from qtpy.QtCore import *
@@ -19,10 +20,23 @@ class SettingsUI:
         if not hasattr(origin, "w_slackStudioTab"):
             origin.w_slackStudioTab = QWidget()
             lo_slack = QVBoxLayout(origin.w_slackStudioTab)
+            lo_slack.setSpacing(15)
+            lo_slack.addStretch()
 
-            self._create_slack_token_settings_menu(lo_slack, origin)
+            self._create_settings_tabs(lo_slack, origin)
+
+            self._create_slack_tokens_settings_menu(lo_slack, origin)
             self._create_notifications_publish_settings_menu(lo_slack, origin)
             self._create_server_settings_menu(lo_slack, origin)
+
+            lo_slack.addStretch()
+
+            lo_links = QHBoxLayout()
+            l_prism_slack_logo = self._grab_prism_slack_logo("studio")
+            lo_links.addWidget(l_prism_slack_logo)
+            lo_links.addStretch()
+            lo_links.addWidget(self._grab_fraktl_logo())
+            lo_slack.addLayout(lo_links)
 
             origin.addTab(origin.w_slackStudioTab, "Slack")
 
@@ -39,6 +53,20 @@ class SettingsUI:
             self._create_server_settings_menu(lo_slack, origin)
 
             origin.addTab(origin.w_slackProjectTab, "Slack")
+
+
+    def _create_settings_tabs(self, lo_slack, origin):
+        slack_settings_tabs = QTabWidget()
+
+        self.notification_settings_tab = QWidget()
+        self.approvals_settings_tab = QWidget()
+        self.server_settings_tab = QWidget()
+        self.tokens_settings_tab = QWidget()
+
+        lo_slack.addWidget(slack_settings_tabs)
+        slack_settings_tabs.addTab(self.notification_settings_tab, "Notifications")
+        slack_settings_tabs.addTab(self.server_settings_tab, "Server")
+        slack_settings_tabs.addTab(self.tokens_settings_tab, "Tokens")
 
     # Create the Custom Channel UI for Project tab
     @err_catcher(__name__)
@@ -58,7 +86,6 @@ class SettingsUI:
             origin.w_slackUserTab = QWidget()
             lo_slackUserTab = QVBoxLayout(origin.w_slackUserTab)
 
-            i_slackLogo = self._grab_slack_logo()
             lo_user = QHBoxLayout()
             l_user = QLabel("Display Name: ")
             le_user = QLineEdit()
@@ -83,54 +110,87 @@ class SettingsUI:
             lo_save.addWidget(origin.b_userSave)
             lo_save.addStretch()
 
+            lo_sites = QHBoxLayout()
+            l_prism_slack = self._grab_prism_slack_logo("user")
+            l_fraktl = self._grab_fraktl_logo()
+            lo_sites.addWidget(l_prism_slack)
+            lo_sites.addStretch()
+            lo_sites.addWidget(l_fraktl)
+
+
             lo_slackUserTab.addStretch()
-            lo_slackUserTab.addWidget(i_slackLogo)
             lo_slackUserTab.addLayout(lo_user)
             lo_slackUserTab.addLayout(lo_save)
             lo_slackUserTab.addStretch()
+            lo_slackUserTab.addLayout(lo_sites)
 
             origin.addTab(origin.w_slackUserTab, "Slack")
 
     # Create the Slack OAuth Token Settings Menu
     @err_catcher(__name__)
-    def _create_slack_token_settings_menu(self, lo_slack, origin):
-        l_slack_logo = self._grab_slack_logo()
+    def _create_slack_tokens_settings_menu(self, lo_slack, origin):
+        lo_slack_token = QVBoxLayout()
+        self.tokens_settings_tab.setLayout(lo_slack_token)
 
-        le_slack_token = QLineEdit()
-        le_slack_token.setPlaceholderText("Enter your Slack API Token")
-        le_slack_token.setEchoMode(QLineEdit.Password)
-        le_slack_token.setReadOnly(True)
-        le_slack_token.setFocusPolicy(Qt.NoFocus)
-        le_slack_token.setContextMenuPolicy(Qt.NoContextMenu)
-        origin.le_slack_token = le_slack_token
+        # -------- BOT TOKEN ---------- #
+        lo_slack_bot_token = QHBoxLayout()
 
-        l_slack_token_help = self._grab_help_icon()
-        l_slack_token_help.setToolTip("""<p style='line-height:1;'>
-                                                <span> Can be found in your Slack app settings under OAuth & Permissions -> Bot User OAuth Token</span>
-                                                </p>""")
+        l_slack_bot_token = QLabel("Bot Token: ")
+        origin.l_slack_bot_token = l_slack_bot_token
 
-        b_slack_token = QPushButton("Input Token")
-        origin.b_slack_token = b_slack_token
+        le_slack_bot_token = QLineEdit()
+        le_slack_bot_token.setPlaceholderText("Input Bot Token --->")
+        le_slack_bot_token.setEchoMode(QLineEdit.Password)
+        le_slack_bot_token.setReadOnly(True)
+        le_slack_bot_token.setFocusPolicy(Qt.NoFocus)
+        le_slack_bot_token.setContextMenuPolicy(Qt.NoContextMenu)
+        origin.le_slack_bot_token = le_slack_bot_token
 
-        lo_slack.addStretch()
-        lo_slack.addWidget(l_slack_logo)
-        lo_slack.setAlignment(l_slack_logo, Qt.AlignBottom)
+        b_slack_bot_token = QPushButton("Input Bot Token")
+        origin.b_slack_bot_token = b_slack_bot_token
 
-        lo_slack.addWidget(origin.le_slack_token)
-        lo_slack.setAlignment(origin.le_slack_token, Qt.AlignBottom)
+        lo_slack_bot_token.addWidget(origin.l_slack_bot_token)
+        lo_slack_bot_token.addWidget(origin.le_slack_bot_token, 1)
+        lo_slack_bot_token.addWidget(origin.b_slack_bot_token, 0, Qt.AlignBottom)
 
-        lo_slack.addWidget(origin.b_slack_token)
-        lo_slack.setAlignment(origin.b_slack_token, Qt.AlignBottom | Qt.AlignCenter)
+        lo_slack_token.addLayout(lo_slack_bot_token)
+
+        # -------- APP-LEVEL TOKEN ---------- #
+        lo_slack_app_level_token = QHBoxLayout()
+
+        l_slack_app_level_token = QLabel("App-Level Token: ")
+        origin.l_slack_app_level_token = l_slack_app_level_token
+
+        le_slack_app_level_token = QLineEdit()
+        le_slack_app_level_token.setPlaceholderText("Input App-Level Token --->")
+        le_slack_app_level_token.setEchoMode(QLineEdit.Password)
+        le_slack_app_level_token.setReadOnly(True)
+        le_slack_app_level_token.setFocusPolicy(Qt.NoFocus)
+        le_slack_app_level_token.setContextMenuPolicy(Qt.NoContextMenu)
+        origin.le_slack_app_level_token = le_slack_app_level_token
+
+        b_slack_app_level_token = QPushButton("Input App-Level Token")
+        origin.b_slack_app_level_token = b_slack_app_level_token
+
+        lo_slack_app_level_token.addWidget(origin.l_slack_app_level_token)
+        lo_slack_app_level_token.addWidget(origin.le_slack_app_level_token, 1)
+        lo_slack_app_level_token.addWidget(origin.b_slack_app_level_token, 0, Qt.AlignBottom)
+
+        lo_slack_token.addLayout(lo_slack_app_level_token)
+
+        lo_slack_token.addStretch()
+
 
     # Create the Notifications Settings Menu
-    @err_catcher(__name__)
+    @err_catcher(name=__name__)
     def _create_notifications_publish_settings_menu(self, lo_slack, origin):
-        gb_notifications = QGroupBox()
-        gb_notifications.setTitle("Notifications/Publish")
-        gb_notifications.setContentsMargins(0, 30, 0, 0)
-        lo_notifications = QVBoxLayout()
-        gb_notifications.setLayout(lo_notifications)
+        # --- Root Layout --- #
+        lo_slack_notifications = QVBoxLayout()
+        self.notification_settings_tab.setLayout(lo_slack_notifications)
+        lo_slack_notifications.setSpacing(10)
+        lo_slack_notifications.setContentsMargins(12, 12, 12, 12)
 
+        # --- User Pool --- #
         lo_notify_user_pool = QHBoxLayout()
         l_notify_method = QLabel("Notify Method:")
         l_notify_user_pool = QLabel("User Pool:")
@@ -152,8 +212,10 @@ class SettingsUI:
         lo_notify_user_pool.addWidget(origin.cb_notify_user_pool)
         lo_notify_user_pool.addWidget(l_notify_user_pool_help)
         lo_notify_user_pool.addStretch()
-        lo_notifications.addLayout(lo_notify_user_pool)
 
+        lo_slack_notifications.addLayout(lo_notify_user_pool)
+
+        # --- Notify Method --- #
         lo_notify_method = QHBoxLayout()
         l_notify_method = QLabel("Method: ")
         cb_notify_method = QComboBox()
@@ -175,10 +237,11 @@ class SettingsUI:
         lo_notify_method.addWidget(origin.cb_notify_method)
         lo_notify_method.addWidget(l_notify_method_help)
         lo_notify_method.addStretch()
-        lo_notifications.addLayout(lo_notify_method)
 
-        lo_slack.addWidget(gb_notifications)
-        lo_slack.setAlignment(lo_notifications, Qt.AlignTop | Qt.AlignLeft)
+        lo_slack_notifications.addLayout(lo_notify_method)
+
+        lo_slack_notifications.addStretch()
+
 
     # Create Custom Channel Settings
     @err_catcher(__name__)
@@ -215,79 +278,58 @@ class SettingsUI:
 
 
     # Create the Server Settings Menu
-    @err_catcher(__name__)
+    @err_catcher(name=__name__)
     def _create_server_settings_menu(self, lo_slack, origin):
-        gb_server = QGroupBox()
-        gb_server.setTitle("Server")
-        gb_server.setContentsMargins(0, 30, 0, 0)
-        lo_server = QVBoxLayout()
-        gb_server.setLayout(lo_server)
+        # --- Root Layout --- #
+        lo_slack_server = QVBoxLayout()
+        self.server_settings_tab.setLayout(lo_slack_server)
 
+        # lo_server = QVBoxLayout()
+        lo_slack_server.setSpacing(8)
+        lo_slack_server.setContentsMargins(12, 8, 12, 12)
+
+        # --- Status Row --- #
         lo_status = QHBoxLayout()
-        l_server_status = QLabel("Status: ")
+        lo_status.setSpacing(6)
+
+        l_server_status = QLabel("Status:")
         l_server_status_value = QLabel("Offline")
-        fo_server_status_value = l_server_status_value.font()
-        fo_server_status_value.setItalic(True)
-        l_server_status_value.setFont(fo_server_status_value)
+        f_status = l_server_status_value.font()
+        f_status.setItalic(True)
+        l_server_status_value.setFont(f_status)
         origin.l_server_status_value = l_server_status_value
 
         lo_status.addWidget(l_server_status)
         lo_status.addWidget(origin.l_server_status_value)
         lo_status.addStretch()
 
-        b_server = QPushButton("Start Server")
-        origin.b_server = b_server
-        lo_status.addWidget(origin.b_server)
+        origin.b_server = QPushButton("Start Server")
+        origin.b_reset_server = QPushButton("Reset Server")
 
-        b_reset_server = QPushButton("Reset Server")
-        origin.b_reset_server = b_reset_server
+        lo_status.addWidget(origin.b_server)
         lo_status.addWidget(origin.b_reset_server)
 
+        # --- Machine Row --- #
         lo_machine = QHBoxLayout()
-        l_machine = QLabel("Machine: ")
+        lo_machine.setSpacing(6)
+
+        l_machine = QLabel("Machine:")
         l_machine_value = QLabel("---------")
-        fo_machine_value = l_machine_value.font()
-        fo_machine_value.setItalic(True)
-        l_machine_value.setFont(fo_machine_value)
+        f_machine = l_machine_value.font()
+        f_machine.setItalic(True)
+        l_machine_value.setFont(f_machine)
         origin.l_machine_value = l_machine_value
 
         lo_machine.addWidget(l_machine)
         lo_machine.addWidget(origin.l_machine_value)
         lo_machine.addStretch()
 
-        lo_app_token = QHBoxLayout()
-        le_app_token = QLineEdit()
-        le_app_token.setPlaceholderText("Enter your Slack App-Level Token")
-        le_app_token.setEchoMode(QLineEdit.Password)
-        le_app_token.setReadOnly(True)
-        le_app_token.setFocusPolicy(Qt.NoFocus)
-        le_app_token.setContextMenuPolicy(Qt.NoContextMenu)
-        origin.le_app_token = le_app_token
+        # --- Assemble --- #
+        lo_slack_server.addLayout(lo_status)
+        lo_slack_server.addLayout(lo_machine)
 
-        l_app_token_help = self._grab_help_icon()
-        l_app_token_help.setToolTip("""<p style='line-height:1;'>
-                                                <span> Can be found in your app settings under Basic Information -> App-Level Tokens</span>
-                                                </p>""")
+        lo_slack_server.addStretch()
 
-        lo_app_token.addWidget(origin.le_app_token)
-        lo_app_token.addWidget(l_app_token_help)
-
-        lo_button_app_token = QHBoxLayout()
-        b_app_token = QPushButton("Input App-Level Token")
-        origin.b_app_token = b_app_token
-
-        lo_button_app_token.addStretch()
-        lo_button_app_token.addWidget(origin.b_app_token)
-        lo_button_app_token.addStretch()
-
-        lo_server.addLayout(lo_status)
-        lo_server.addLayout(lo_machine)
-        lo_server.addLayout(lo_app_token)
-        lo_server.addLayout(lo_button_app_token)
-
-        lo_slack.addWidget(gb_server)
-        lo_slack.setAlignment(lo_server, Qt.AlignTop | Qt.AlignLeft)
-        lo_slack.addStretch()
 
     # Grab the Slack logo
     @err_catcher(__name__)
@@ -295,12 +337,12 @@ class SettingsUI:
         l_slack = QLabel()
 
         plugin_directory = Path(__file__).resolve().parents[4]
-        i_slack = os.path.join(plugin_directory, "Resources", "slack-logo.png")
+        i_slack = os.path.join(plugin_directory, "Resources", "slack-icon.png")
 
         pixmap = QPixmap(i_slack)
 
         # Set pixmap to label and scale
-        scale = 0.05
+        scale = 0.015
         l_slack.setPixmap(pixmap)
         l_slack.setScaledContents(True)
         l_slack.setFixedSize(pixmap.width() * scale, pixmap.height() * scale)
@@ -333,3 +375,44 @@ class SettingsUI:
         l_verify.setPixmap(pixmap)
 
         return l_verify
+
+    @err_catcher(__name__)
+    def _grab_prism_slack_logo(self, tab):
+        l_prism_slack = QLabel()
+
+        plugin_directory = Path(__file__).resolve().parents[4]
+        i_fraktl = os.path.join(plugin_directory, "Resources", "prism_slack_logo_community_banner.png")
+
+        pixmap = QPixmap(i_fraktl)
+
+        scale = 0.125
+        l_prism_slack.setPixmap(pixmap)
+        l_prism_slack.setScaledContents(True)
+        l_prism_slack.setFixedSize(pixmap.width() * scale, pixmap.height() * scale)
+        l_prism_slack.setCursor(Qt.CursorShape.PointingHandCursor)
+        if tab == "user":
+            l_prism_slack.mousePressEvent = lambda e: webbrowser.open("https://docs.fraktlfx.com/prism/slack/integration/user-settings")
+        elif tab == "project":
+            l_prism_slack.mousePressEvent = lambda e: webbrowser.open("https://docs.fraktlfx.com/prism/slack/integration/project-settings")
+        else:
+            l_prism_slack.mousePressEvent = lambda e: webbrowser.open("https://docs.fraktlfx.com/prism/slack/integration/studio-settings")
+
+        return l_prism_slack
+    
+    @err_catcher(__name__)
+    def _grab_fraktl_logo(self):
+        l_fraktl = QLabel()
+
+        plugin_directory = Path(__file__).resolve().parents[4]
+        i_fraktl = os.path.join(plugin_directory, "Resources", "fraktl-logo.svg")
+
+        pixmap = QPixmap(i_fraktl)
+
+        scale = 0.125
+        l_fraktl.setPixmap(pixmap)
+        l_fraktl.setScaledContents(True)
+        l_fraktl.setFixedSize(pixmap.width() * scale, pixmap.height() * scale)
+        l_fraktl.setCursor(Qt.CursorShape.PointingHandCursor)
+        l_fraktl.mousePressEvent = lambda e: webbrowser.open("https://fraktlfx.com")
+
+        return l_fraktl
