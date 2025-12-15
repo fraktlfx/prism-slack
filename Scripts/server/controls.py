@@ -31,8 +31,9 @@ class ServerControls:
         config = SlackConfig(self.core).load_config(mode="studio")
         token = config["slack"]["token"]
         app_token = config["slack"]["server"]["app_token"]
-
-        executable = os.path.join(self.core.prismLibs, "Python311", "python.exe")
+        
+        python_version = self.core.pythonVersion
+        executable = os.path.join(self.core.prismLibs, f"{python_version}", "python.exe")
 
         # Set the environment variables for the Slack Bolt Server
         sub_env = os.environ.copy()
