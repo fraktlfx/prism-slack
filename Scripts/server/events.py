@@ -21,7 +21,6 @@ class SlackEvents:
             ack()
 
             channel_id = event["channel"]["id"]
-            channel_name = event["channel"]["name"].upper()
             
             url = "https://slack.com/api/conversations.join"
             headers = {

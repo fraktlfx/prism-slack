@@ -136,7 +136,7 @@ def _convert_to_mp4(core, input_sequence, start_frame, output_file):
         return
 
     try:
-        result = subprocess.run(
+        subprocess.run(
             [
                 ffmpegPath,
                 "-y",

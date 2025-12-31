@@ -66,7 +66,7 @@ def get_channel_users(access_token, channel_id):
 
         user_id = user.get("id")
 
-        if user.get("is_bot") == False:
+        if user.get("is_bot") is False:
             channel_users.append({"id": user_id, "display_name": user_name})
 
     return channel_users
