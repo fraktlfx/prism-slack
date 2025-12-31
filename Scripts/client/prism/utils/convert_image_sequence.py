@@ -130,6 +130,7 @@ def _construct_output_file(input_sequence):
 def _convert_to_mp4(core, input_sequence, start_frame, output_file):
     ffmpegPath = os.path.join(core.prismLibs, "Tools", "FFmpeg", "bin", "ffmpeg.exe")
     ffmpegPath = ffmpegPath.replace("\\", "/")
+    fps = core.getConfig("globals", "fps", configPath=core.prismIni)
     
     if not os.path.exists(ffmpegPath):
         raise SystemError(f"ffmpeg not found at {ffmpegPath}")
@@ -141,7 +142,7 @@ def _convert_to_mp4(core, input_sequence, start_frame, output_file):
                 ffmpegPath,
                 "-y",
                 "-framerate",
-                "24",
+                fps,
                 "-start_number",
                 start_frame,
                 "-i",
