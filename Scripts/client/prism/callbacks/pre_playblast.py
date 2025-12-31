@@ -17,7 +17,7 @@ def prePlayblast(core, **kwargs):
 
     try:
         access_token = API(core).get_access_token()
-    except:
+    except Exception:
         raise "Failed to retrieve Slack access token. Please check your configuration."
 
     if state.gb_slack.isChecked():

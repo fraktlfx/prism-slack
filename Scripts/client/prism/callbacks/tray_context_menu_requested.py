@@ -7,9 +7,7 @@ from Scripts.client.prism.ui import ServerNonWarning
 from Scripts.server.controls import ServerControls
 from Scripts.client.prism.ui.tray_ui import TrayUI
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtGui import QIcon
 
 
 # Load the UI for the Slack plugin in the system tray context menu

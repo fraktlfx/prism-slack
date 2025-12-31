@@ -5,9 +5,7 @@ from Scripts.client.prism.utils.publish_to_slack import PublishToSlack
 from Scripts.client.prism.ui import AdditionalInfoDialog
 from Scripts.client.prism.api import API
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtWidgets import QDialog, QAction
 
 
 def mediaPlayerContextMenuRequested(core, origin, menu):

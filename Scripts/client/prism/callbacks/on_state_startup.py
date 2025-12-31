@@ -6,9 +6,8 @@ from Scripts.client.slack import (
 from Scripts.client.prism.ui.state_manager_ui import StateManagerUI
 from Scripts.client.prism.api import API
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QGroupBox, QVBoxLayout
 
 
 def onStateStartup(core, state):
