@@ -1,8 +1,5 @@
 import requests
 import os
-import json
-
-from pprint import pprint
 
 
 # Upload a file to a channel

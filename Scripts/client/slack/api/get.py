@@ -61,7 +61,7 @@ def get_channel_users(access_token, channel_id):
 
         try:
             user_name = user["profile"].get("display_name")
-        except:
+        except Exception:
             user_name = user["profile"].get("real_name")
 
         user_id = user.get("id")
