@@ -8,9 +8,7 @@ from Scripts.client.prism.ui import (
     ServerNonWarning,
 )
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtWidgets import QDialog
 
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
@@ -24,10 +22,14 @@ class ServerControls:
     def start_server(self):
         import win32api
         import subprocess
+        
         # Create paths for the environment variables to be used in the Slack Bolt Server
         scripts_path = self.core.getPlugin("Slack").pluginDirectory
         bolt_path = os.path.join(scripts_path, "server", "bolt.py")
-
+        if not self._check_tokens_set():
+            print("Slack Bot Token or App Level Token is not set in the Slack Settings.")
+            return
+        
         config = SlackConfig(self.core).load_config(mode="studio")
         token = config["slack"]["token"]
         app_token = config["slack"]["server"]["app_token"]
@@ -44,7 +46,6 @@ class ServerControls:
         sub_env["PRISM_UTILS"] = F"{self.core.prismLibs}\Scripts\PrismUtils"
 
         server_status = config["slack"]["server"].get("status")
-        machine = config["slack"]["server"].get("machine")
 
         # Set handler for console events to reset the server status if the server is stopped
         win32api.SetConsoleCtrlHandler(
@@ -103,6 +104,11 @@ class ServerControls:
     @err_catcher(name=__name__)
     def gui_start_server(self, origin):
         start_check = ServerStartWarning()
+        
+        if not self._check_tokens_set():
+            self.core.popup("Slack Bot Token or App Level Token is not set in the Slack Settings.")
+            return
+
         if start_check.exec_() == QDialog.Accepted:
             self.start_server()
             origin.b_server.setText("Stop Server")
@@ -164,3 +170,15 @@ class ServerControls:
         else:
             origin.b_reset_server.setEnabled(True)
             self.gui_start_server(origin)
+
+    # Check to make sure tokens are set before starting the server
+    @err_catcher(name=__name__)
+    def _check_tokens_set(self):
+        config = SlackConfig(self.core).load_config(mode="studio")
+        token = config["slack"]["token"]
+        app_token = config["slack"]["server"]["app_token"]
+
+        if not token or not app_token:
+            return False
+        else:
+            return True
