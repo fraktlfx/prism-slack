@@ -5,9 +5,7 @@ from Scripts.client.prism.api import API
 from Scripts.client import slack
 from Scripts.client.prism.utils.convert_image_sequence import check_conversion
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtCore import QTimer
 
 class PublishToSlack:
     def __init__(self, core):
@@ -31,7 +29,7 @@ class PublishToSlack:
         try:
             upload.replace("\\", "/")
         except Exception as e:
-            print("")
+            print("error replacing backslashes: ", e)
         
         if state_data["ui"] != "DL":
             QTimer.singleShot(
@@ -67,7 +65,7 @@ class PublishToSlack:
 
         try:
             # Upload the file to Slack
-            upload = slack.upload_content(access_token, channel_id, file, slack_user, comment)
+            slack.upload_content(access_token, channel_id, file, slack_user, comment)
 
             # Post the successful upload message
             uploaded = True

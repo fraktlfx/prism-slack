@@ -3,9 +3,9 @@ import webbrowser
 from pathlib import Path
 from client.prism.api import API
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QIcon, QPixmap
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QComboBox, QTabWidget, QGroupBox
 
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 

@@ -3,14 +3,7 @@ from Scripts.server.controls import ServerControls
 from Scripts.client.prism.ui import InputDialog
 from Scripts.client.prism.api import API
 
-from Scripts.client.prism.ui.load_custom_channel_settings import (
-    load_custom_channel_settings,
-)
-
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
-
+from qtpy.QtWidgets import QDialog
 
 pcore = None
 

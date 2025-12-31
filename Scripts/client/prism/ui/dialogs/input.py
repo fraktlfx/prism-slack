@@ -1,8 +1,8 @@
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
 import os
 from pathlib import Path
+
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QDialog, QLabel, QLineEdit, QPushButton
 
 
 # Create dialog used to input things like the Slack OAuth token or the App-Level Token

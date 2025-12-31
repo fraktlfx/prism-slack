@@ -1,6 +1,6 @@
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QVBoxLayout, QHBoxLayout, QDialog, QLabel, QPushButton
 
 import os
 from pathlib import Path

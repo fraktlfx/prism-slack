@@ -1,6 +1,4 @@
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtWidgets import QVBoxLayout, QHBoxLayout, QDialog, QLabel, QPushButton
 
 
 # Create a dialog to let the user know that the server is not running on their machine and it cannot be stopped from here

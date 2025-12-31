@@ -1,6 +1,4 @@
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtWidgets import QVBoxLayout, QHBoxLayout, QDialog, QLabel, QPushButton
 
 
 # Create a dialog to make sure the user wants to stop the server

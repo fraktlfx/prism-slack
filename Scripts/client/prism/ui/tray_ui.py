@@ -2,9 +2,8 @@ import os
 import socket
 from pathlib import Path
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QMenu, QAction
 
 
 class TrayUI:
@@ -13,7 +12,7 @@ class TrayUI:
 
     # Create the Tray UI for the Slack Server
     def create_tray_slack_ui(self, menu, server_status, server_machine):
-        self.slack_menu = QMenu(f"Slack Server")
+        self.slack_menu = QMenu("Slack Server")
 
         plugin_directory = Path(__file__).resolve().parents[4]
         self.slack_icon = QIcon(

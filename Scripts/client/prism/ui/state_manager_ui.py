@@ -1,8 +1,5 @@
-from Scripts.client.slack.slack_config import SlackConfig
-
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QHBoxLayout, QLabel, QCheckBox, QComboBox, QTextEdit, QWidget
 
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 

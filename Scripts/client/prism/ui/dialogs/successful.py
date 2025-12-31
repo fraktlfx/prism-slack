@@ -1,6 +1,4 @@
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtWidgets import QMessageBox
 
 
 # Create a dialog to let the user know whether or not the upload was successful

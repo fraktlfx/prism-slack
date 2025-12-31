@@ -5,10 +5,7 @@ from Scripts.client.prism.api import API
 from Scripts.client.slack import get_channel_id
 from Scripts.client.slack.slack_config import SlackConfig
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
-
+from qtpy.QtGui import QIcon
 
 def load_custom_channel_settings(core, origin):
     _check_custom_channel(core, origin)

@@ -2,10 +2,6 @@ import os
 import re
 from functools import partial
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
-
 from Scripts.client.slack.slack_config import SlackConfig
 from Scripts.client.prism.api import API
 from Scripts.server.controls import ServerControls
@@ -93,7 +89,7 @@ class Prism_Slack_Functions(object):
                     if output is None:
                         return
                     
-                except:
+                except Exception:
                     output = None
 
                 exit_names = ["_updateMaster", "_publishToSlack", "_cleanup", "_export"]
@@ -160,7 +156,7 @@ class Prism_Slack_Functions(object):
 
                 dl = self.core.getPlugin("Deadline")
 
-                result = dl.submitPythonJob(
+                dl.submitPythonJob(
                     code=code,
                     jobName=job + "_publishToSlack",
                     jobPrio=80,

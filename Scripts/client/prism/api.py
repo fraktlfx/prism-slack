@@ -1,9 +1,7 @@
 from Scripts.client.slack.slack_config import SlackConfig
-from Scripts.client.prism.ui import WarningDialog, InputDialog
+from Scripts.client.prism.ui import InputDialog
 
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
+from qtpy.QtWidgets import QDialog
 
 studio_config = None
 project_config = None
@@ -21,7 +19,7 @@ class API:
         else:
             try:
                 studio_config = SlackConfig(self.core).load_config("studio")
-            except:
+            except Exception:
                 studio_config = None
 
             project_config = SlackConfig(self.core).load_config("project")

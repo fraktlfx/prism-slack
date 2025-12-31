@@ -1,9 +1,8 @@
-from qtpy.QtCore import *
-from qtpy.QtGui import *
-from qtpy.QtWidgets import *
-
 import os
 from pathlib import Path
+
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QVBoxLayout, QDialog, QLabel
 
 # Create an "Uploading" dialog for the user to see while the file is being uploaded
 class UploadDialog(QDialog):
