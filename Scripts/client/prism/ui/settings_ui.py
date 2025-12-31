@@ -1,6 +1,7 @@
 import os
 import webbrowser
 from pathlib import Path
+from client.prism.api import API
 
 from qtpy.QtCore import *
 from qtpy.QtGui import *
@@ -32,7 +33,7 @@ class SettingsUI:
             lo_slack.addStretch()
 
             lo_links = QHBoxLayout()
-            l_prism_slack_logo = self._grab_prism_slack_logo("studio")
+            l_prism_slack_logo = self._grab_prism_slack_logo()
             lo_links.addWidget(l_prism_slack_logo)
             lo_links.addStretch()
             lo_links.addWidget(self._grab_fraktl_logo())
@@ -46,11 +47,19 @@ class SettingsUI:
         if not hasattr(origin, "w_slackProjectTab"):
             origin.w_slackProjectTab = QWidget()
             lo_slack = QVBoxLayout(origin.w_slackProjectTab)
+            lo_slack.setSpacing(15)
+            lo_slack.addStretch()
 
-            self._create_slack_token_settings_menu(lo_slack, origin)
+            self._create_settings_tabs(lo_slack, origin)
+
+            self._create_slack_tokens_settings_menu(lo_slack, origin)
             self._create_notifications_publish_settings_menu(lo_slack, origin)
             self._create_custom_channel_settings(lo_slack, origin)
             self._create_server_settings_menu(lo_slack, origin)
+
+            lo_slack.addStretch()
+
+            self._create_links_section(lo_slack, origin)
 
             origin.addTab(origin.w_slackProjectTab, "Slack")
 
@@ -67,6 +76,9 @@ class SettingsUI:
         slack_settings_tabs.addTab(self.notification_settings_tab, "Notifications")
         slack_settings_tabs.addTab(self.server_settings_tab, "Server")
         slack_settings_tabs.addTab(self.tokens_settings_tab, "Tokens")
+        if API(self.core).is_studio_loaded() is None:
+            self.custom_channel_settings_tab = QWidget()
+            slack_settings_tabs.addTab(self.custom_channel_settings_tab, "Custom Channel")
 
     # Create the Custom Channel UI for Project tab
     @err_catcher(__name__)
@@ -111,7 +123,7 @@ class SettingsUI:
             lo_save.addStretch()
 
             lo_sites = QHBoxLayout()
-            l_prism_slack = self._grab_prism_slack_logo("user")
+            l_prism_slack = self._grab_prism_slack_logo()
             l_fraktl = self._grab_fraktl_logo()
             lo_sites.addWidget(l_prism_slack)
             lo_sites.addStretch()
@@ -246,11 +258,7 @@ class SettingsUI:
     # Create Custom Channel Settings
     @err_catcher(__name__)
     def _create_custom_channel_settings(self, lo_slack, origin):
-        gb_custom_channel = QGroupBox()
-        gb_custom_channel.setTitle("Custom Channel")
-        gb_custom_channel.setContentsMargins(0, 30, 0, 0)
         lo_custom_channel = QHBoxLayout()
-        gb_custom_channel.setLayout(lo_custom_channel)
 
         origin.l_custom_channel = QLabel("Channel Name: ")
         origin.le_custom_channel = QLineEdit()
@@ -273,8 +281,16 @@ class SettingsUI:
         lo_custom_channel.addWidget(origin.l_custom_channel_help)
         lo_custom_channel.addStretch()
 
-        lo_slack.addWidget(gb_custom_channel)
-        lo_slack.setAlignment(lo_custom_channel, Qt.AlignTop | Qt.AlignLeft)
+        if API(self.core).is_studio_loaded() is not None:
+            gb_custom_channel = QGroupBox()
+            gb_custom_channel.setTitle("Custom Channel")
+            gb_custom_channel.setContentsMargins(0, 30, 0, 0)
+            gb_custom_channel.setLayout(lo_custom_channel)
+            lo_slack.addWidget(gb_custom_channel)
+        else:
+            # Add to custom channel settings tab (only exists when Studio plugin isn't loaded)
+            if hasattr(self, "custom_channel_settings_tab"):
+                self.custom_channel_settings_tab.setLayout(lo_custom_channel)
 
 
     # Create the Server Settings Menu
@@ -330,6 +346,16 @@ class SettingsUI:
 
         lo_slack_server.addStretch()
 
+    def _create_links_section(self, lo_slack, origin):
+        lo_links = QHBoxLayout()
+        l_prism_slack_logo = self._grab_prism_slack_logo()
+        l_fraktl_logo = self._grab_fraktl_logo()
+
+        lo_links.addWidget(l_prism_slack_logo)
+        lo_links.addStretch()
+        lo_links.addWidget(l_fraktl_logo)
+
+        lo_slack.addLayout(lo_links)
 
     # Grab the Slack logo
     @err_catcher(__name__)
@@ -377,7 +403,7 @@ class SettingsUI:
         return l_verify
 
     @err_catcher(__name__)
-    def _grab_prism_slack_logo(self, tab):
+    def _grab_prism_slack_logo(self):
         l_prism_slack = QLabel()
 
         plugin_directory = Path(__file__).resolve().parents[4]
@@ -390,12 +416,7 @@ class SettingsUI:
         l_prism_slack.setScaledContents(True)
         l_prism_slack.setFixedSize(pixmap.width() * scale, pixmap.height() * scale)
         l_prism_slack.setCursor(Qt.CursorShape.PointingHandCursor)
-        if tab == "user":
-            l_prism_slack.mousePressEvent = lambda e: webbrowser.open("https://docs.fraktlfx.com/prism/slack/integration/user-settings")
-        elif tab == "project":
-            l_prism_slack.mousePressEvent = lambda e: webbrowser.open("https://docs.fraktlfx.com/prism/slack/integration/project-settings")
-        else:
-            l_prism_slack.mousePressEvent = lambda e: webbrowser.open("https://docs.fraktlfx.com/prism/slack/integration/studio-settings")
+        l_prism_slack.mousePressEvent = lambda e: webbrowser.open("https://docs.fraktlfx.com/prism/slack/home")
 
         return l_prism_slack
     
