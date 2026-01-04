@@ -1,9 +1,6 @@
 import os
 import json
 from copy import deepcopy
-from pprint import pprint
-
-from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
 
 class SlackConfig:
@@ -207,7 +204,7 @@ class SlackConfig:
 
             self.save_config_setting(config, "studio")
 
-        except Exception as e:
+        except Exception:
             return
 
     def _set_defaults(self, slack_defaults: dict, config: dict):
@@ -231,7 +228,7 @@ class SlackConfig:
             # Save updated config
             self.save_config_setting(config, "studio")
 
-        except Exception as e:
+        except Exception:
             self.save_config_setting(config, "studio")
             return
 
