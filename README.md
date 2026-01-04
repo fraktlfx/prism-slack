@@ -23,7 +23,7 @@
 
 ## Introduction
 
-This is the Slack plugin for Prism-Pipeline 2.1.0
+This is the Community Edition of the Slack plugin for Prism-Pipeline 2
 
 ## Requirements
 
