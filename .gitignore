@@ -1,8 +1,4 @@
-**/__pycache__/*.pyc
-*.pyc 
 PythonLibs
-Scripts/__pycache__/*.pyc
-Scripts/server/__pycache__/**
-Scripts/integration/__pycache__/**
-Scripts/utils/__pycache__/**
+**/__pycache__/**
 .win_venv
+/dist
