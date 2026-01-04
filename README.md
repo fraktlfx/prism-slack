@@ -23,7 +23,10 @@
 
 ## Introduction
 
-This is the Community Edition of the Slack plugin for Prism-Pipeline 2
+This is the Community Edition of the Slack plugin for Prism-Pipeline 2.
+
+> [!NOTE]
+> If you are looking for the Studio Edition you can go here: [Fraktl Prism/Slack Studio Edition](https://fraktlfx.com/pipeline/prism-slack)
 
 ## Requirements
 
