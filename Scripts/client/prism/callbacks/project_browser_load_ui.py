@@ -2,7 +2,6 @@ import os
 import webbrowser
 from typing import Any
 
-from client.prism.api import API
 from qtpy.QtWidgets import QAction, QMenu
 
 
@@ -50,11 +49,6 @@ class ProjectBrowserUI:
         self.documentation.setIcon(self.documentation_icon)
         self.documentation.triggered.connect(
             lambda: webbrowser.open("https://docs.fraktlfx.com/prism/slack")
-        )
-
-        self.manage_license = QAction("Manage License(s)", origin)
-        self.manage_license_icon = self.core.media.getColoredIcon(
-            os.path.join(self.core.prismRoot, "Scripts", "UserInterfacesPrism", "user.png")
         )
 
         slack_menu.addAction(self.website)

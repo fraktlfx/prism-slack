@@ -2,7 +2,8 @@ import os
 
 from Scripts.client.prism.ui import UploadDialog, SuccessfulPOST
 from Scripts.client.prism.api import API
-from Scripts.client import slack
+from Scripts.client.slack.api import get_channel_id, get_channel_users
+from Scripts.client.slack.api.post import upload_content
 from Scripts.client.prism.utils.convert_image_sequence import check_conversion
 
 from qtpy.QtCore import QTimer
@@ -57,15 +58,15 @@ class PublishToSlack:
             upload_dialog.show()
 
         current_project = f"{state_data['project']}"
-        channel_id = slack.get_channel_id(access_token, current_project)
-        channel_users = slack.get_channel_users(access_token, channel_id)
+        channel_id = get_channel_id(access_token, current_project)
+        channel_users = get_channel_users(access_token, channel_id)
         slack_user = API(self.core).get_slack_user_id(prism_user, channel_users)
 
         comment = state_data["comments"]
 
         try:
             # Upload the file to Slack
-            slack.upload_content(access_token, channel_id, file, slack_user, comment)
+            upload_content(access_token, channel_id, file, slack_user, comment)
 
             # Post the successful upload message
             uploaded = True

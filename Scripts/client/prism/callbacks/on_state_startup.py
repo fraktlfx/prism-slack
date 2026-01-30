@@ -1,4 +1,4 @@
-from Scripts.client.slack import (
+from Scripts.client.slack.api import (
     get_channel_users,
     get_studio_users,
     get_channel_id,

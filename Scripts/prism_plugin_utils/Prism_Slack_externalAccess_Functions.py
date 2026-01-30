@@ -8,9 +8,7 @@ from Scripts.client.prism.callbacks.user_settings_load_ui import userSettings_lo
 from Scripts.client.prism.callbacks.project_settings_load_ui import (
     projectSettings_loadUI,
 )
-from Scripts.client.prism.callbacks.project_browser_load_ui import (
-    projectBrowser_loadUI,
-)
+from Scripts.client.prism.callbacks.project_browser_load_ui import projectBrowser_loadUI
 from Scripts.client.prism.callbacks.tray_context_menu_requested import (
     trayContextMenuRequested,
 )

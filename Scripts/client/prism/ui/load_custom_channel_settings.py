@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from Scripts.client.prism.api import API
-from Scripts.client.slack import get_channel_id
+from Scripts.client.slack.api import get_channel_id
 from Scripts.client.slack.slack_config import SlackConfig
 
 from qtpy.QtGui import QIcon
