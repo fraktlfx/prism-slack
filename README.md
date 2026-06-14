@@ -5,8 +5,8 @@
 </picture>  
   
 <div>
-<img src="https://img.shields.io/badge/Prism_Pipeline-2.1.0-mediumseagreen" alt="Prism Pipeline Version"> 
-<img src="https://img.shields.io/badge/Slack_Plugin-2.1.0-4A154B?logo=slack" alt="Slack Plugin Version">
+<img src="https://img.shields.io/badge/Prism_Pipeline-2.1.2-mediumseagreen" alt="Prism Pipeline Version"> 
+<img src="https://img.shields.io/badge/Slack_Plugin-2.1.2-4A154B?logo=slack" alt="Slack Plugin Version">
 </div>  
 <br>
   
