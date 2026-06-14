@@ -1,6 +1,10 @@
 import os
 
-def deadline_submission_script(core, output, state_data, prism_user):
+
+def deadline_submission_script(
+    core: object, output: str, state_data: dict, prism_user: str
+) -> str:
+
     root = os.path.join(core.prismRoot, "Scripts")
     root = root.replace("\\", "/")
     project = state_data["project"]

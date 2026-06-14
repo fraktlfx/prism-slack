@@ -65,37 +65,30 @@ If you want to avoid the next 4 steps below, you can open a terminal in the Pris
 
 > If you downloaded the ZIP file, extract its contents to a folder.
 
-3.  Move the Plugin to the Prism Plugin Folder
+3.Move the Plugin to the Prism Plugin Folder
 
     > Locate your Prism Plugin folder.
 
         Drag and drop the downloaded or unzipped plugin folder into the Prism Plugin folder.
 
-4.  Reload Prism
+4.Install Python Dependencies
 
-> Restart or reload Prism.
+   To reduce distribution size, the Python dependencies are not bundled directly with the plugin. You will need to run the following:
+   - Windows
+      - install_packages.bat
 
-    The Slack plugin should automatically appear in the plugin list and be checked as enabled.
+   - Mac/Linux
+      - install_packages.sh
 
-### Slack
+5.Start/Reload Prism
 
-We did not include the Slack API’s in the repository to limit the size of it. You can either download the release package or you can download it on your own. If you chose to download it on your own, please follow the steps below to do so.
+   - Restart Prism or reload plugins
+   - Verify that the Slack plugin appears in the plugin list and is enabled
 
-If you want to avoid all of these steps below, you can open a terminal in the Slack plugin directory and run this command
-
-> pip install -r requirements.txt -t ./PythonLibs
-
-1. Install the Slack Bolt and Slack SDK
-   > pip install slack_sdk
-
-> pip install slack_bolt
-
-2. Locate Slack API packages  
-   If you do not know where to find the packages you just installed, run this command
-   > pip show slack_sdk
-
-> pip show slack_bolt
-
-3. Copy/move them to this folder  
-   If the PythonLibs folder does not exist, create it
-   > {PRISM_PLUGIN_DIRECTORY}/Slack/PythonLibs
+## Documentation & Support
+  
+All configuration steps, advanced usage, and troubleshooting are documented here:
+  
+https://docs.fraktlfx.com/prism/slack/home  
+  
+For any further questions please contact **Fraktl** directly at: support@fraktlfx.com

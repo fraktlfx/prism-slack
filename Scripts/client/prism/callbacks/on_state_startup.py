@@ -3,6 +3,8 @@ from Scripts.client.slack.api import (
     get_studio_users,
     get_channel_id,
 )
+
+from client.prism.utils import log_and_print
 from Scripts.client.prism.ui.state_manager_ui import StateManagerUI
 from Scripts.client.prism.api import API
 
@@ -10,12 +12,17 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QGroupBox, QVBoxLayout
 
 
-def onStateStartup(core, state):
+def onStateStartup(core: object, state: object):
     # Add Slack publishing options to the State Manager
     if state.className == "Playblast":
         lo = state.gb_playblast.layout()
     elif state.className == "ImageRender":
         lo = state.gb_imageRender.layout()
+    elif state.className == "Export":
+        if core.appPlugin.pluginName == "Houdini":
+            lo = state.gb_general.layout()
+        else:
+            lo = state.gb_export.layout()
     else:
         return
 
@@ -34,12 +41,11 @@ def onStateStartup(core, state):
         state.gb_slack.toggled.connect(
             lambda toggled: _create_slack_submenu(core, toggled, state)
         )
-        state.gb_slack.toggled.connect(lambda toggled: state.stateManager.saveStatesToScene())
-        
+
         lo.addWidget(state.gb_slack)
 
 
-def _create_slack_submenu(core, toggled, state):
+def _create_slack_submenu(core: object, toggled: bool, state: object):
     try:
         state_manager_ui = StateManagerUI(core)
         # If the group box is toggled on
@@ -53,10 +59,11 @@ def _create_slack_submenu(core, toggled, state):
             state_manager_ui.removeCleanupLayout(layout, "lo_slack_notify", state)
 
     except Exception as e:
-        print(f"Error creating Slack submenu: {e}")
+        log_and_print(40, f"Failed to create Slack submenu. Error: {e}")
+        return
 
 
-def _populate_user_pool(core, state):
+def _populate_user_pool(core: object, state: object):
     api = API(core)
     try:
         access_token = api.get_access_token()
@@ -76,4 +83,5 @@ def _populate_user_pool(core, state):
         state.cb_slackUserPool.addItems(users)
 
     except Exception as e:
-        print(f"Failed to populate user pool: {e}")
+        log_and_print(40, f"Failed to populate Slack user pool. Error: {e}")
+        return

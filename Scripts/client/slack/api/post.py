@@ -3,7 +3,19 @@ import os
 
 
 # Upload a file to a channel
-def upload_content(access_token, conversation_id, file, slack_user, comment):
+def upload_content(
+    access_token: str, conversation_id: str, file: str, slack_user: str, comment: str
+):
+    """
+    Upload a file to Slack and complete the upload process.
+
+    Args:
+       access_token (str): The Slack access token.
+       channel_id (str): The ID of the Slack channel to upload the file to.
+       file (str): The file path to be uploaded.
+       slack_user (str): The Slack user ID of the uploader.
+       comment (str): The initial comment to include with the uploaded file.
+    """
     # Get the files size required for the upload
     file_stats = os.stat(file)
     file_size = file_stats.st_size
@@ -49,7 +61,17 @@ def upload_content(access_token, conversation_id, file, slack_user, comment):
 
 
 # Post a message to a user on a channel
-def post_channel_message(access_token, channel, message):
+def post_channel_message(access_token: str, channel: str, message: str):
+    """
+    Post a message to a thread in a Slack channel.
+
+    Args:
+       access_token (str): The Slack access token.
+       channel (str): The ID of the Slack channel.
+       message (str): The message text to post.
+       thread_ts (str): The timestamp of the thread to post the message in.
+    """
+
     url = "https://slack.com/api/chat.postMessage"
     headers = {"Authorization": f"Bearer {access_token}"}
     payload = {"channel": channel, "text": message}
@@ -61,7 +83,16 @@ def post_channel_message(access_token, channel, message):
 
 
 # Post a direct message to a user
-def post_direct_message(access_token, slack_recipient, message):
+def post_direct_message(access_token: str, slack_recipient: str, message: str):
+    """
+    Post a message to a Slack channel.
+
+    Args:
+        access_token (str): The Slack access token.
+        channel (str): The ID of the Slack channel.
+        message (str): The message text to post.
+    """
+
     url = "https://slack.com/api/conversations.open"
     headers = {"Authorization": f"Bearer {access_token}"}
     payload = {"users": slack_recipient}
@@ -80,7 +111,18 @@ def post_direct_message(access_token, slack_recipient, message):
 
 
 # Post an ephemeral message to a channel
-def post_channel_ephemeral_message(access_token, slack_recipient, channel_id, message):
+def post_channel_ephemeral_message(
+    access_token: str, slack_recipient: str, channel_id: str, message: str
+):
+    """
+    Post a direct message to a Slack user.
+
+    Args:
+        access_token (str): The Slack access token.
+        slack_recipient (str): The Slack user ID of the recipient.
+        message (str): The message text to send.
+    """
+
     url = "https://slack.com/api/chat.postEphemeral"
     headers = {"Authorization": f"Bearer {access_token}"}
     payload = {"channel": channel_id, "user": slack_recipient, "text": message}
@@ -89,7 +131,19 @@ def post_channel_ephemeral_message(access_token, slack_recipient, channel_id, me
 
 
 # Post an ephemeral message to a user
-def post_direct_ephemeral_message(access_token, slack_recipient, message):
+def post_direct_ephemeral_message(
+    access_token: str, slack_recipient: str, message: str
+):
+    """
+    Post an ephemeral message to a Slack message.
+
+    Args:
+        access_token (str): The Slack access token.
+        slack_recipient (str): The Slack user ID of the recipient.
+        channel_id (str): The ID of the Slack channel.
+        message (str): The message text to send.
+    """
+
     url = "https://slack.com/api/conversations.open"
     headers = {"Authorization": f"Bearer {access_token}"}
     payload = {"users": slack_recipient}

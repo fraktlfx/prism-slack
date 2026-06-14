@@ -1,5 +1,6 @@
-from Scripts.client.slack.slack_config import SlackConfig
-from Scripts.client.prism.ui import InputDialog
+from pathlib import Path
+from client.slack.slack_config import SlackConfig
+from client.prism.ui import InputDialog
 
 from qtpy.QtWidgets import QDialog
 
@@ -7,8 +8,9 @@ studio_config = None
 project_config = None
 user_config = None
 
+
 class API:
-    def __init__(self, core):
+    def __init__(self, core: object):
 
         global studio_config, project_config, user_config
 
@@ -23,11 +25,11 @@ class API:
                 studio_config = None
 
             project_config = SlackConfig(self.core).load_config("project")
-        
+
         user_config = SlackConfig(self.core).load_config("user")
 
     # Get Slack Access Token from config file
-    def get_access_token(self):
+    def get_access_token(self) -> str:
         """
         Get Slack Bot Access Token from the studio configuration file.
 
@@ -38,7 +40,7 @@ class API:
         return studio_config["slack"]["tokens"]["bot_token"]
 
     # Get Slack App Level Token from config file
-    def get_app_level_token(self):
+    def get_app_level_token(self) -> str:
         """
         Get Slack App Level Token from the studio configuration file.
 
@@ -49,7 +51,7 @@ class API:
         return studio_config["slack"]["tokens"]["app_token"]
 
     # Get the current project name
-    def get_current_project(self):
+    def get_current_project(self) -> str:
         """
         Get the current project name, considering any custom Slack notification channel.
 
@@ -70,7 +72,7 @@ class API:
         return project
 
     # Get Slack Notification Method from config file
-    def get_notify_user_method(self):
+    def get_notify_user_method(self) -> str:
         """
         Get Slack Notification Method from studio config file.
 
@@ -81,7 +83,7 @@ class API:
         return studio_config["slack"]["notifications"]["method"]
 
     # Get Slack Notification User Pool from config file
-    def get_notify_user_pool(self):
+    def get_notify_user_pool(self) -> str:
         """
         Get Slack Notification User Pool from studio config file.
 
@@ -92,7 +94,7 @@ class API:
         return studio_config["slack"]["notifications"]["user_pool"]
 
     # Get Custom Slack Notification Channel from config file
-    def get_notify_custom_channel(self):
+    def get_notify_custom_channel(self) -> str:
         """
         Get Custom Slack Notification Channel from project config file.
 
@@ -102,7 +104,7 @@ class API:
 
         return project_config["slack"]["custom"]["channel"]
 
-    def get_server_status(self):
+    def get_server_status(self) -> str:
         """
         Get the current status of the Bolt server from the studio configuration file.
 
@@ -112,7 +114,7 @@ class API:
 
         return studio_config["slack"]["server"]["status"]
 
-    def get_server_machine(self):
+    def get_server_machine(self) -> str:
         """
         Get the machine name where the Bolt server is running from the studio configuration file.
 
@@ -122,18 +124,18 @@ class API:
 
         return studio_config["slack"]["server"]["machine"]
 
-    def get_server_pid(self):
+    def get_server_pid(self) -> int:
         """
         Get the process ID of the currently running Bolt server from the studio configuration file.
 
         Returns:
-            str: The process ID of the Bolt server.
+            int: The process ID of the Bolt server.
         """
 
         return studio_config["slack"]["server"]["pid"]
 
     # Get Slack Display Name from prism user configuration
-    def get_prism_slack_username(self):
+    def get_prism_slack_username(self) -> str:
         """
         Return Slack username. If missing, prompt user to sign in via Slack OAuth.
         """
@@ -152,7 +154,9 @@ class API:
             return user_data["slack"].get("username")
 
     # Get Slack User ID from user list
-    def get_slack_user_id(self, username, user_pool):
+    def get_slack_user_id(
+        self, username: str, user_pool: list[dict[str, str]]
+    ) -> str | None:
         """
         Get the Slack User ID based on the provided username and channel users.
 
@@ -170,7 +174,7 @@ class API:
         return None
 
     # Check if the studio plugin is loaded
-    def is_studio_loaded(self):
+    def is_studio_loaded(self) -> object | None:
         """
         Check if the Studio plugin is loaded in the core.
 
@@ -181,7 +185,9 @@ class API:
         return self.core.getPlugin("Studio")
 
     # Get the message to send to the user
-    def get_render_message(self, slack_user, seq, shot, product, sender):
+    def get_message(
+        self, slack_user: str, seq: str, shot: str, product: str, sender: str
+    ) -> str:
         """
         Generate a Slack message for render notification.
 
@@ -208,3 +214,42 @@ class API:
             message = f"Heads up <@{slack_user}>!\n A new version of `{product}` for `{seq}`/`{shot}` is on the way!"
 
         return message
+
+    def get_version_folder(self, file_path: str) -> Path:
+        """
+        Given the first file of a prism sequence, determine the correct version folder.
+        Handles:
+        - v0005 (mp4)
+        - v0005 (mov)
+        - v0005 (proxy)
+        - v0005
+        - render cases where the version folder is one level up
+        Works on Windows and Linux.
+        """
+        p = Path(file_path).resolve()
+        p = Path(str(p).replace("\\", "/"))
+        print(f"Resolving version folder for file: {p}")
+
+        parent = p.parent
+        grandparent = parent.parent
+
+        def is_version(name: str) -> bool:
+            return name.startswith("v") and name[1:].isdigit()
+
+        if is_version(parent.name):
+            return parent
+
+        if "(" in parent.name and parent.name.endswith(")"):
+            cleaned = parent.name.split(" ")[0]
+            if is_version(cleaned):
+                return parent.with_name(cleaned)
+
+        if is_version(grandparent.name):
+            return grandparent
+
+        if "(" in grandparent.name and grandparent.name.endswith(")"):
+            cleaned = grandparent.name.split(" ")[0]
+            if is_version(cleaned):
+                return grandparent.with_name(cleaned)
+
+        return parent

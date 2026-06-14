@@ -16,13 +16,11 @@ from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
 
 class Prism_Slack_externalAccess_Functions(object):
-    def __init__(self, core, plugin):
+    def __init__(self, core: object, plugin: object):
         self.core = core
         self.plugin = plugin
 
-        self.core.registerCallback(
-            "onPluginsLoaded", self.onPluginsLoaded, plugin=self
-        )
+        self.core.registerCallback("onPluginsLoaded", self.onPluginsLoaded, plugin=self)
 
         self.core.registerCallback(
             "userSettings_loadUI",
@@ -60,7 +58,6 @@ class Prism_Slack_externalAccess_Functions(object):
             partial(projectBrowser_loadUI, self.core),
             plugin=self,
         )
-
 
         self.core.registerCallback(
             "userSettings_loadUI",

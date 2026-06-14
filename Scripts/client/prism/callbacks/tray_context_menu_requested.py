@@ -8,10 +8,11 @@ from Scripts.server.controls import ServerControls
 from Scripts.client.prism.ui.tray_ui import TrayUI
 
 from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QWidget
 
 
 # Load the UI for the Slack plugin in the system tray context menu
-def trayContextMenuRequested(core, origin, menu):
+def trayContextMenuRequested(core: object, origin: object, menu: QWidget):
     config = SlackConfig(core).load_config(mode="studio")
     SlackConfig(core).check_slack_studio_options(config)
 
@@ -40,7 +41,9 @@ def trayContextMenuRequested(core, origin, menu):
 
 
 # Toggle the Slack menu status and actions in the system tray
-def _slack_tray_toggle(core, tray_ui, server_status, server_machine):
+def _slack_tray_toggle(
+    core: object, tray_ui: object, server_status: str, server_machine: str
+):
     plugin_directory = Path(__file__).resolve().parents[4]
 
     stop_server_action = tray_ui.stop_server_action

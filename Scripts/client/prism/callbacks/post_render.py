@@ -1,54 +1,66 @@
 from Scripts.client.prism.api import API
-from Scripts.client.prism.utils.publish_to_slack import PublishToSlack
+from Scripts.client.slack.publish import Publish
+from client.prism.utils import (
+    resolve_aftereffects_output,
+    get_state_data,
+    log_and_print,
+    check_publish_options,
+    check_deadline_option,
+)
 
 
 # Handle the output result after rendering
-def postRender(core, **kwargs):
-    state = kwargs.get("state", None)
+def postRender(core: object, **kwargs: dict[str, str]):
+    """
+    Begin the publishing process to Slack after a render is completed.
 
-    if hasattr(state, "gb_slack"):
-        if state.gb_slack.isChecked():
-            if state.chb_slackPublish.isChecked():
-                output = kwargs.get("settings", None)["outputName"]
-                output = output.replace("\\", "/")
-                prism_user = API(core).get_prism_slack_username()
-                app = core.appPlugin.pluginName
+    Args:
+        core (object): The core application object.
+        **kwargs (dict[str, str]): Additional keyword arguments containing state and settings.
+    """
+    log_and_print(20, "[PostRender] postRender callback triggered.")
 
-                state_data = {
-                    "project": API(core).get_current_project(),
-                    "range_type": state.cb_rangeType.currentText(),
-                    "publish_to_slack": state.chb_slackPublish.isChecked(),
-                    "comments": state.te_slackComments.toPlainText(),
-                    "state_type": "render",
-                    "ui": "SM",
-                    "app": app,
-                }
+    app = core.appPlugin.pluginName
 
-                if state.cb_rangeType.currentText() == "Custom":
-                    state_data["start_frame"] = state.sp_rangeStart.text()
-                    state_data["end_frame"] = state.sp_rangeEnd.text()
-                else:
-                    state_data["start_frame"] = state.l_rangeStart.text()
-                    state_data["end_frame"] = state.l_rangeEnd.text()
+    prism_user = API(core).get_prism_slack_username()
 
-                if core.getPlugin("MediaExtension") is not None:
-                    state_data["convert_media"] = state.chb_mediaConversion.isChecked()
-                    state_data["converted_extension"] = (
-                        state.cb_mediaConversion.currentText().lower()
-                    )
-                else:
-                    state_data["convert_media"] = None
-                    state_data["converted_extension"] = None
+    if app == "AfterEffects":
+        state = core.appPlugin.dlg_render
 
-                if core.getPlugin("Deadline"):
-                    if hasattr(state, "gb_submit"):
-                        if state.gb_submit.isChecked():
-                            return
-                        else:
-                            PublishToSlack(core).publish_to_slack(output, state_data, prism_user)
-                    else:
-                        PublishToSlack(core).publish_to_slack(output, state_data, prism_user)
-                else:
-                    PublishToSlack(core).publish_to_slack(output, state_data, prism_user)
+        if not check_publish_options(core, state, app, option="publish"):
+            return
 
-    return
+        output = kwargs.get("outputpath", {})
+
+        output = resolve_aftereffects_output(core, output)
+
+        if output is None:
+            log_and_print(20, f"[AE] Output path could not be resolved: {output}")
+            core.popup(f"Output path does not exist: {output}")
+            return
+
+        state_data = get_state_data(
+            core=core, state=state, output=output, ui="SM", state_type="render"
+        )
+
+    else:
+        state = kwargs.get("state", None)
+
+        if not check_publish_options(core, state, app, option="publish"):
+            return
+
+        output = kwargs.get("settings", None)["outputName"].replace("\\", "/")
+
+        state_data = get_state_data(
+            core=core, state=state, output=output, ui="SM", state_type="render"
+        )
+
+        if check_deadline_option(core, state):
+            return
+
+        log_and_print(
+            20,
+            f"Publishing to Slack with output: {output} and state data: {state_data}",
+        )
+
+    Publish(core).publish_to_slack(output, state_data, prism_user)

@@ -12,10 +12,10 @@ if scripts not in sys.path:
 if modules not in sys.path:
     sys.path.append(modules)
 
-
-import client.slack.api as slack_api
+from client.prism.utils.logging import setup_logging
 from client.prism.api import API
-from client.prism.utils.publish_to_slack import PublishToSlack
+import client.slack.api as slack_api
+from client.slack.publish import Publish
 from prism_plugin_utils.Prism_Slack_externalAccess_Functions import (
     Prism_Slack_externalAccess_Functions,
 )
@@ -27,16 +27,20 @@ class Prism_Slack(
     Prism_Slack_Variables,
     Prism_Slack_Functions,
     Prism_Slack_externalAccess_Functions,
-    PublishToSlack,
+    Publish,
     API,
 ):
     def __init__(self, core):
         self.core = core
-        Prism_Slack_Variables.__init__(self, core, self)
+        setup_logging(
+            log_dir=os.path.dirname(self.core.configs.getConfigPath("user")), level=20
+        )
 
+        Prism_Slack_Variables.__init__(self, core, self)
         Prism_Slack_Functions.__init__(self, core, self)
         Prism_Slack_externalAccess_Functions.__init__(self, core, self)
-        PublishToSlack.__init__(self, core)
+
+        Publish.__init__(self, core)
         API.__init__(self, core)
 
         for func in slack_api.__all__:

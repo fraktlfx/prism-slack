@@ -3,14 +3,14 @@ from Scripts.client.slack.slack_config import SlackConfig
 
 
 # Load the UI for the Slack plugin in the user settings window
-def userSettings_loadUI(core, origin):
+def userSettings_loadUI(core: object, origin: object):
     SettingsUI(core).create_user_settings_ui(origin)
     _check_username(core, origin)
     origin.b_userSave.clicked.connect(lambda: _save_username(core, origin))
 
 
 # Check the Slack display name in the user settings window and set it if it exists
-def _check_username(core, origin):
+def _check_username(core: object, origin: object):
     le_user = origin.le_user
     user_data = SlackConfig(core).load_config("user")
 
@@ -27,7 +27,7 @@ def _check_username(core, origin):
 
 
 # Save the Slack display name in the user config file
-def _save_username(core, origin):
+def _save_username(core: object, origin: object):
     le_user = origin.le_user
     user_data = SlackConfig(core).load_config("user")
 

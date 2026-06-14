@@ -2,6 +2,9 @@ from Scripts.client.slack.api.get import (
     get_user_info,
     get_channel_id,
     get_channel_users,
+    get_file_timestamp,
+    get_channel_history,
+    get_permalink,
     get_studio_users,
 )
 from Scripts.client.slack.api.post import (
@@ -16,6 +19,9 @@ __all__ = [
     "get_user_info",
     "get_channel_id",
     "get_channel_users",
+    "get_file_timestamp",
+    "get_channel_history",
+    "get_permalink",
     "get_studio_users",
     "upload_content",
     "post_channel_message",

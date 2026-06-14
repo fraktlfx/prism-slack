@@ -3,7 +3,7 @@ from Scripts.client.prism.ui.settings_ui import SettingsUI
 from Scripts.client.prism.ui.load_settings import load_settings
 
 
-def studioSettings_loadSettings(core, origin, settings):
+def studioSettings_loadSettings(core: object, origin: object, settings: dict):
     settings = SettingsUI(core)
 
     if core.getPlugin("Studio").getStudioConfigPath() is None:
