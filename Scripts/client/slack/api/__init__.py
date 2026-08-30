@@ -1,4 +1,4 @@
-from Scripts.client.slack.api.get import (
+from prism_slack.client.slack.api.get import (
     get_user_info,
     get_channel_id,
     get_channel_users,
@@ -7,7 +7,7 @@ from Scripts.client.slack.api.get import (
     get_permalink,
     get_studio_users,
 )
-from Scripts.client.slack.api.post import (
+from prism_slack.client.slack.api.post import (
     upload_content,
     post_channel_message,
     post_direct_message,

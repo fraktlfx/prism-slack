@@ -2,10 +2,10 @@ import os
 import socket
 from pathlib import Path
 
-from Scripts.client.slack.slack_config import SlackConfig
-from Scripts.client.prism.ui import ServerNonWarning
-from Scripts.server.controls import ServerControls
-from Scripts.client.prism.ui.tray_ui import TrayUI
+from prism_slack.client.slack.slack_config import SlackConfig
+from prism_slack.client.prism.ui import ServerNonWarning
+from prism_slack.server.controls import ServerControls
+from prism_slack.client.prism.ui.tray_ui import TrayUI
 
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QWidget

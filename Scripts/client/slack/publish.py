@@ -3,15 +3,15 @@ import time
 import json
 from typing import List, Dict, Any
 
-from Scripts.client.prism.ui import UploadDialog, SuccessfulPOST
-from Scripts.client.prism.api import API
-from Scripts.client.slack.api import (
+from prism_slack.client.prism.ui import UploadDialog, SuccessfulPOST
+from prism_slack.client.prism.api import API
+from prism_slack.client.slack.api import (
     get_channel_id,
     get_channel_users,
     get_channel_history,
     upload_content,
 )
-from Scripts.client.prism.utils.convert_image_sequence import (
+from prism_slack.client.prism.utils.convert_image_sequence import (
     check_conversion,
     log_and_print,
 )

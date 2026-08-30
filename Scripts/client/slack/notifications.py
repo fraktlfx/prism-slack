@@ -1,10 +1,10 @@
 import os
 
-from client.prism.utils import log_and_print
+from prism_slack.client.prism.utils import log_and_print
 
-from Scripts.client.slack.slack_config import SlackConfig
-from Scripts.client.prism.api import API
-from Scripts.client.slack.api import (
+from prism_slack.client.slack.slack_config import SlackConfig
+from prism_slack.client.prism.api import API
+from prism_slack.client.slack.api import (
     get_channel_users,
     get_channel_id,
     post_channel_message,
@@ -12,7 +12,7 @@ from Scripts.client.slack.api import (
     post_channel_ephemeral_message,
     post_direct_ephemeral_message,
 )
-from Scripts.client.prism.ui import InputDialog
+from prism_slack.client.prism.ui import InputDialog
 
 
 def notify_before_publish(core: object, notify_user: str, product: str):

@@ -1,12 +1,12 @@
-from Scripts.client.slack.api import (
+from prism_slack.client.slack.api import (
     get_channel_users,
     get_studio_users,
     get_channel_id,
 )
 
-from client.prism.utils import log_and_print
-from Scripts.client.prism.ui.state_manager_ui import StateManagerUI
-from Scripts.client.prism.api import API
+from prism_slack.client.prism.utils import log_and_print
+from prism_slack.client.prism.ui.state_manager_ui import StateManagerUI
+from prism_slack.client.prism.api import API
 
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QGroupBox, QVBoxLayout

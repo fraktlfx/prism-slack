@@ -1,5 +1,5 @@
 import os
-from client.prism.api import API
+from prism_slack.client.prism.api import API
 from .ae_utils import get_aftereffects_frame_data
 
 

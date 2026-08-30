@@ -1,5 +1,5 @@
-from Scripts.client.prism.ui.settings_ui import SettingsUI
-from Scripts.client.slack.slack_config import SlackConfig
+from prism_slack.client.prism.ui.settings_ui import SettingsUI
+from prism_slack.client.slack.slack_config import SlackConfig
 
 
 # Load the UI for the Slack plugin in the user settings window

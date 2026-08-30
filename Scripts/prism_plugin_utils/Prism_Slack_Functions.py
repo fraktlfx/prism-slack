@@ -2,22 +2,22 @@ import os
 import re
 from functools import partial
 
-from Scripts.client.prism.api import API
-from Scripts.server.controls import ServerControls
-from Scripts.client.slack.slack_config import SlackConfig
-from Scripts.client.prism.callbacks.media_player_context_menu_requested import (
+from prism_slack.client.prism.api import API
+from prism_slack.server.controls import ServerControls
+from prism_slack.client.slack.slack_config import SlackConfig
+from prism_slack.client.prism.callbacks.media_player_context_menu_requested import (
     mediaPlayerContextMenuRequested,
 )
-from Scripts.client.prism.callbacks.on_after_effects_render_dlg_created import (
+from prism_slack.client.prism.callbacks.on_after_effects_render_dlg_created import (
     onAfterEffectsRenderDlgCreated,
 )
-from Scripts.client.prism.callbacks.on_state_startup import onStateStartup
-from Scripts.client.prism.callbacks.post_playblast import postPlayblast
-from Scripts.client.prism.callbacks.post_render import postRender
-from Scripts.client.prism.callbacks.pre_render import preRender
-from Scripts.client.prism.callbacks.pre_export import preExport
-from Scripts.client.prism.callbacks.pre_playblast import prePlayblast
-from Scripts.client.prism.utils import (
+from prism_slack.client.prism.callbacks.on_state_startup import onStateStartup
+from prism_slack.client.prism.callbacks.post_playblast import postPlayblast
+from prism_slack.client.prism.callbacks.post_render import postRender
+from prism_slack.client.prism.callbacks.pre_render import preRender
+from prism_slack.client.prism.callbacks.pre_export import preExport
+from prism_slack.client.prism.callbacks.pre_playblast import prePlayblast
+from prism_slack.client.prism.utils import (
     deadline_submission_script,
     get_state_data,
     log_and_print,

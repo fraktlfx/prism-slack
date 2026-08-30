@@ -1,10 +1,10 @@
-from Scripts.client.slack.slack_config import SlackConfig
-from Scripts.client.prism.ui.settings_ui import SettingsUI
-from Scripts.client.prism.api import API
-from Scripts.client.prism.ui.load_custom_channel_settings import (
+from prism_slack.client.slack.slack_config import SlackConfig
+from prism_slack.client.prism.ui.settings_ui import SettingsUI
+from prism_slack.client.prism.api import API
+from prism_slack.client.prism.ui.load_custom_channel_settings import (
     load_custom_channel_settings,
 )
-from Scripts.client.prism.ui.load_settings import load_settings
+from prism_slack.client.prism.ui.load_settings import load_settings
 
 pcore = None
 

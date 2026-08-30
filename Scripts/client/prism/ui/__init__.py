@@ -1,12 +1,12 @@
-from Scripts.client.prism.ui.dialogs.additional_info import AdditionalInfoDialog
-from Scripts.client.prism.ui.dialogs.upload import UploadDialog
-from Scripts.client.prism.ui.dialogs.input import InputDialog
-from Scripts.client.prism.ui.dialogs.server_non_warning import ServerNonWarning
-from Scripts.client.prism.ui.dialogs.server_start_warning import ServerStartWarning
-from Scripts.client.prism.ui.dialogs.server_stop_warning import ServerStopWarning
-from Scripts.client.prism.ui.dialogs.slack_studio_path_not_found import SlackStudioPathNotFound
-from Scripts.client.prism.ui.dialogs.successful import SuccessfulPOST
-from Scripts.client.prism.ui.dialogs.warning import WarningDialog
+from prism_slack.client.prism.ui.dialogs.additional_info import AdditionalInfoDialog
+from prism_slack.client.prism.ui.dialogs.upload import UploadDialog
+from prism_slack.client.prism.ui.dialogs.input import InputDialog
+from prism_slack.client.prism.ui.dialogs.server_non_warning import ServerNonWarning
+from prism_slack.client.prism.ui.dialogs.server_start_warning import ServerStartWarning
+from prism_slack.client.prism.ui.dialogs.server_stop_warning import ServerStopWarning
+from prism_slack.client.prism.ui.dialogs.slack_studio_path_not_found import SlackStudioPathNotFound
+from prism_slack.client.prism.ui.dialogs.successful import SuccessfulPOST
+from prism_slack.client.prism.ui.dialogs.warning import WarningDialog
 
 
 __all__ = [

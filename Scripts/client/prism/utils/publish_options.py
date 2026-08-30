@@ -1,4 +1,4 @@
-from client.prism.api import API
+from prism_slack.client.prism.api import API
 from .logging import log_and_print
 
 

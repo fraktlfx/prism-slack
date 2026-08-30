@@ -1,6 +1,6 @@
-from Scripts.client.prism.ui import SlackStudioPathNotFound
-from Scripts.client.prism.ui.settings_ui import SettingsUI
-from Scripts.client.prism.ui.load_settings import load_settings
+from prism_slack.client.prism.ui import SlackStudioPathNotFound
+from prism_slack.client.prism.ui.settings_ui import SettingsUI
+from prism_slack.client.prism.ui.load_settings import load_settings
 
 
 def studioSettings_loadSettings(core: object, origin: object, settings: dict):

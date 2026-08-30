@@ -3,11 +3,11 @@ import json
 import webbrowser
 from pathlib import Path
 
-from Scripts.client.prism.api import API
-from Scripts.client.prism.utils import log_and_print
-from Scripts.client.prism.ui import AdditionalInfoDialog
-from Scripts.client.slack.publish import Publish
-from Scripts.client.slack.api import get_channel_id, get_permalink
+from prism_slack.client.prism.api import API
+from prism_slack.client.prism.utils import log_and_print
+from prism_slack.client.prism.ui import AdditionalInfoDialog
+from prism_slack.client.slack.publish import Publish
+from prism_slack.client.slack.api import get_channel_id, get_permalink
 
 from qtpy.QtWidgets import QDialog, QAction, QWidget
 

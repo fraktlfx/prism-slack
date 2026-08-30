@@ -1,6 +1,6 @@
 from pathlib import Path
-from client.slack.slack_config import SlackConfig
-from client.prism.ui import InputDialog
+from prism_slack.client.slack.slack_config import SlackConfig
+from prism_slack.client.prism.ui import InputDialog
 
 from qtpy.QtWidgets import QDialog
 

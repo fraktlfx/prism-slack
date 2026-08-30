@@ -1,6 +1,6 @@
-from Scripts.client.prism.api import API
-from Scripts.client.slack.publish import Publish
-from client.prism.utils import (
+from prism_slack.client.prism.api import API
+from prism_slack.client.slack.publish import Publish
+from prism_slack.client.prism.utils import (
     resolve_aftereffects_output,
     get_state_data,
     log_and_print,

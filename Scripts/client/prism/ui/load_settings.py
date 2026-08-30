@@ -1,7 +1,7 @@
-from Scripts.client.slack.slack_config import SlackConfig
-from Scripts.server.controls import ServerControls
-from Scripts.client.prism.ui import InputDialog
-from Scripts.client.prism.api import API
+from prism_slack.client.slack.slack_config import SlackConfig
+from prism_slack.server.controls import ServerControls
+from prism_slack.client.prism.ui import InputDialog
+from prism_slack.client.prism.api import API
 
 from qtpy.QtWidgets import QDialog
 

@@ -1,5 +1,5 @@
-from client.prism.utils import log_and_print, check_publish_options
-from client.slack.notifications import notify_before_publish
+from prism_slack.client.prism.utils import log_and_print, check_publish_options
+from prism_slack.client.slack.notifications import notify_before_publish
 
 
 def preRender(core: object, **kwargs: dict[str, str]):

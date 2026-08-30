@@ -7,13 +7,13 @@ from typing import Any
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 from qtpy.QtWidgets import QDialog
 
-from Scripts.client.prism.api import API
-from Scripts.client.prism.ui import (
+from prism_slack.client.prism.api import API
+from prism_slack.client.prism.ui import (
     ServerNonWarning,
     ServerStartWarning,
     ServerStopWarning,
 )
-from Scripts.client.slack.slack_config import SlackConfig
+from prism_slack.client.slack.slack_config import SlackConfig
 
 
 class ServerControls:

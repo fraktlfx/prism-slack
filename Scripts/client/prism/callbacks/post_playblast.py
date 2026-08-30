@@ -1,6 +1,6 @@
-from Scripts.client.prism.api import API
-from Scripts.client.slack.publish import Publish
-from Scripts.client.prism.utils import (
+from prism_slack.client.prism.api import API
+from prism_slack.client.slack.publish import Publish
+from prism_slack.client.prism.utils import (
     get_state_data,
     check_publish_options,
     check_deadline_option,

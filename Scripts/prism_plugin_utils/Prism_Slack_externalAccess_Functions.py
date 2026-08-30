@@ -1,15 +1,15 @@
 from functools import partial
-from Scripts.client.prism.api import API
+from prism_slack.client.prism.api import API
 
-from Scripts.client.prism.callbacks.studio_settings_load_settings import (
+from prism_slack.client.prism.callbacks.studio_settings_load_settings import (
     studioSettings_loadSettings,
 )
-from Scripts.client.prism.callbacks.user_settings_load_ui import userSettings_loadUI
-from Scripts.client.prism.callbacks.project_settings_load_ui import (
+from prism_slack.client.prism.callbacks.user_settings_load_ui import userSettings_loadUI
+from prism_slack.client.prism.callbacks.project_settings_load_ui import (
     projectSettings_loadUI,
 )
-from Scripts.client.prism.callbacks.project_browser_load_ui import projectBrowser_loadUI
-from Scripts.client.prism.callbacks.tray_context_menu_requested import (
+from prism_slack.client.prism.callbacks.project_browser_load_ui import projectBrowser_loadUI
+from prism_slack.client.prism.callbacks.tray_context_menu_requested import (
     trayContextMenuRequested,
 )
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher

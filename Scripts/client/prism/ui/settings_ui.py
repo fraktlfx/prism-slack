@@ -1,7 +1,7 @@
 import os
 import webbrowser
 from pathlib import Path
-from client.prism.api import API
+from prism_slack.client.prism.api import API
 
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QIcon, QPixmap

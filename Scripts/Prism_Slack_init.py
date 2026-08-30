@@ -1,26 +1,30 @@
 import os
 import sys
+import types
 
 scripts = os.path.dirname(__file__)
 root = os.path.dirname(scripts)
 modules = os.path.join(root, "PythonLibs")
 
-if root not in sys.path:
-    sys.path.append(root)
-if scripts not in sys.path:
-    sys.path.append(scripts)
-if modules not in sys.path:
-    sys.path.append(modules)
+for path in (modules, root):
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
-from client.prism.utils.logging import setup_logging
-from client.prism.api import API
-import client.slack.api as slack_api
-from client.slack.publish import Publish
-from prism_plugin_utils.Prism_Slack_externalAccess_Functions import (
+namespace = sys.modules.get("prism_slack")
+if namespace is None:
+    namespace = types.ModuleType("prism_slack")
+    namespace.__path__ = [scripts]
+    sys.modules["prism_slack"] = namespace
+
+from prism_slack.client.prism.utils.logging import setup_logging
+from prism_slack.client.prism.api import API
+import prism_slack.client.slack.api as slack_api
+from prism_slack.client.slack.publish import Publish
+from prism_slack.prism_plugin_utils.Prism_Slack_externalAccess_Functions import (
     Prism_Slack_externalAccess_Functions,
 )
-from prism_plugin_utils.Prism_Slack_Functions import Prism_Slack_Functions
-from prism_plugin_utils.Prism_Slack_Variables import Prism_Slack_Variables
+from prism_slack.prism_plugin_utils.Prism_Slack_Functions import Prism_Slack_Functions
+from prism_slack.prism_plugin_utils.Prism_Slack_Variables import Prism_Slack_Variables
 
 
 class Prism_Slack(

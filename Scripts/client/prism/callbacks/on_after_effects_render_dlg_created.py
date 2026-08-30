@@ -1,7 +1,7 @@
 from typing import Any
 
-from client.prism.api import API
-from client.slack.api import get_channel_id, get_channel_users, get_studio_users
+from prism_slack.client.prism.api import API
+from prism_slack.client.slack.api import get_channel_id, get_channel_users, get_studio_users
 
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
