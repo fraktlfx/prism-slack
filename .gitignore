@@ -2,3 +2,4 @@ PythonLibs
 **/__pycache__/**
 .win_venv
 /dist
+/.vscode
