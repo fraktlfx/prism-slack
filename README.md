@@ -89,15 +89,19 @@ If you want to avoid all of these steps below, you can open a terminal in the Sl
 1. Install the Slack Bolt and Slack SDK
    > pip install slack_sdk  
    > pip install slack_bolt  
+   > pip install requests
    > pip install flask  
    > pip install py-machineid  
+   > pip install cryptography
 
 2. Locate Slack API packages  
    If you do not know where to find the packages you just installed, run this command
    > pip show slack_sdk  
    > pip show slack_bolt  
+   > pip show requests  
    > pip show flask  
    > pip show py-machineid  
+   > pip show cryptography
 
 3. Copy/move them to this folder  
    If the PythonLibs folder does not exist, create it
