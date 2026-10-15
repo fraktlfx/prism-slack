@@ -1,8 +1,8 @@
 import os
 import json
+from copy import deepcopy
 from pathlib import Path
 from typing import Mapping
-from copy import deepcopy
 
 
 class SlackModeError(Exception):
@@ -30,6 +30,12 @@ class SlackConfig:
             },
             "notifications": {"tag_artist": False, "method": "", "user_pool": ""},
             "custom": {"channel": ""},
+            "approvals": {
+                "enabled": False,
+                "update_status": False,
+                "enable_usergroup": False,
+                "usergroup": "",
+            },
             "server": {
                 "status": "",
                 "machine": "",
@@ -69,7 +75,7 @@ class SlackConfig:
 
         return config_path
 
-    def get_user_config_path(self) -> str:
+    def get_user_config_path(self):
         """
         Retrieve the Prism user configuration file path.
 
@@ -197,22 +203,20 @@ class SlackConfig:
         try:
             if mode == "studio":
                 studio = self.core.getPlugin("Studio")
-                if studio is None:
-                    with open(config_path, "w") as f:
-                        json.dump(setting, f, indent=4)
+                if studio is not None:
+                    user = self.core.username
+                    role = studio.getUserRole(user)
+                    if "admin" in role:
+                        with open(config_path, "w") as f:
+                            json.dump(setting, f, indent=4)
+                    else:
+                        self.core.popup(
+                            "You do not have permission to modify the Slack studio configuration."
+                        )
                         return
-
-                user = self.core.username
-                role = studio.getUserRole(user)
-                if "admin" in role:
+                else:
                     with open(config_path, "w") as f:
                         json.dump(setting, f, indent=4)
-                else:
-                    self.core.popup(
-                        "You do not have permission to modify the Slack studio configuration."
-                    )
-                    return
-
             else:
                 with open(config_path, "w") as f:
                     json.dump(setting, f, indent=4)
@@ -258,6 +262,11 @@ class SlackConfig:
             config["slack"] = self._deep_merge_dictionaries(
                 source=self.slack_defaults, destination=config.get("slack", {})
             )
+            if "tag_artist" not in config["slack"]["notifications"]:
+                config["slack"]["notifications"]["tag_artist"] = False
+
+            if "update_status" not in config["slack"]["approvals"]:
+                config["slack"]["approvals"]["update_status"] = False
 
             self.save_config_setting(config, "studio")
 

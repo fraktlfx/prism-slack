@@ -2,8 +2,6 @@ import os
 import glob
 import re
 
-from .logging import log_and_print
-
 
 def determine_frame_range(output: str) -> dict:
     """
@@ -62,9 +60,6 @@ def determine_frame_range(output: str) -> dict:
         raise RuntimeError(f"Could not parse sequence pattern from: {output}")
 
     files = glob.glob(os.path.join(directory, glob_pattern))
-    log_and_print(
-        20, f"Looking for files with pattern: {os.path.join(directory, glob_pattern)}"
-    )
 
     frames = []
 
@@ -75,7 +70,6 @@ def determine_frame_range(output: str) -> dict:
             frames.append(int(m.group(1)))
 
     if not frames:
-        log_and_print(40, f"No matching frames found for pattern: {glob_pattern}")
         raise RuntimeError("No matching frames found")
 
     frames.sort()

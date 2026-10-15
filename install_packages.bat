@@ -74,7 +74,11 @@ REM Install packages locally
 py -%PY_VERSION% -m pip install ^
     --target "%TARGET_DIR%" ^
     slack_sdk ^
-    slack_bolt
+    slack_bolt ^
+    requests ^
+    flask ^
+    py-machineid ^
+    cryptography
 
 IF ERRORLEVEL 1 (
     echo ERROR: Package installation failed.

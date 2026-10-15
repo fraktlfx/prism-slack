@@ -1,4 +1,4 @@
-from prism_slack.client.prism.api import API
+﻿from prism_slack.client.prism.api import API
 from .logging import log_and_print
 
 
@@ -26,16 +26,13 @@ def check_publish_options(core: object, state: object, app: str, option: str) ->
         )
 
         if "slack_publish" not in state.knobs():
-            log_and_print(
-                20, "[NUKE] Slack knobs not found on the node. Skipping Slack publish."
-            )
+            log_and_print(20, "[NUKE] Slack knobs not found on the node. Skipping Slack publish.")
             return False
 
         if option == "publish":
             if not state["slack_publish"].value():
                 log_and_print(
-                    20,
-                    "[NUKE] Slack publish option is not enabled. Skipping Slack publish.",
+                    20, "[NUKE] Slack publish option is not enabled. Skipping Slack publish."
                 )
                 return False
 
@@ -54,22 +51,19 @@ def check_publish_options(core: object, state: object, app: str, option: str) ->
 
         if not hasattr(state, "gb_slack"):
             log_and_print(
-                20,
-                f"[{app.upper()}] Slack UI elements not found in postRender state object.",
+                20, f"[{app.upper()}] Slack UI elements not found in postRender state object."
             )
             return False
 
         if not state.gb_slack.isChecked():
             log_and_print(
-                20,
-                f"[{app.upper()}] Slack options are disabled. Skipping Slack publish.",
+                20, f"[{app.upper()}] Slack options are disabled. Skipping Slack publish."
             )
             return False
 
         if option == "publish" and not state.chb_slackPublish.isChecked():
             log_and_print(
-                20,
-                f"[{app.upper()}] Slack publish option is not enabled. Skipping Slack publish.",
+                20, f"[{app.upper()}] Slack publish option is not enabled. Skipping Slack publish."
             )
             return False
 
@@ -80,13 +74,13 @@ def check_publish_options(core: object, state: object, app: str, option: str) ->
             )
             return False
 
-        if not API(core).get_prism_slack_username():
+        if not API(core).get_prism_slack_user_id():
             log_and_print(
                 20,
                 f"[{app.upper()}] User not authenticated with Slack. Prompting user to authenticate in Prism Settings.",
             )
             core.popup(
-                f"[{app.upper()}] You'll need to enter your Slack Display Name in the Prism settings before being able to Publish."
+                f"[{app.upper()}] You'll need to use the Sign in with Slack option in the Prism settings before being able to Publish."
             )
             return False
 

@@ -1,11 +1,7 @@
-import os
-import platform
+﻿import os
 import socket
+import platform
 from pathlib import Path
-from typing import Any
-
-from PrismUtils.Decorators import err_catcher_plugin as err_catcher
-from qtpy.QtWidgets import QDialog
 
 from prism_slack.client.prism.api import API
 from prism_slack.client.prism.ui import (
@@ -15,11 +11,15 @@ from prism_slack.client.prism.ui import (
 )
 from prism_slack.client.slack.slack_config import SlackConfig
 
+from qtpy.QtWidgets import QDialog, QWidget
+
+from PrismUtils.Decorators import err_catcher_plugin as err_catcher
+
 
 class ServerControls:
     """Class to manage Slack Bolt Server controls."""
 
-    def __init__(self, core):
+    def __init__(self, core: object):
         self.core = core
 
     @err_catcher(name=__name__)
@@ -60,7 +60,7 @@ class ServerControls:
                 import win32api
 
                 win32api.SetConsoleCtrlHandler(
-                    lambda event: (self.reset_server_status() if event == 2 else False), True
+                    lambda event: self.reset_server_status() if event == 2 else False, True
                 )
 
             except Exception as e:
@@ -148,12 +148,12 @@ class ServerControls:
             handler._set_tray_display_state(running=False)
 
     @err_catcher(name=__name__)
-    def gui_start_server(self, origin: Any):
+    def gui_start_server(self, origin: QWidget):
         """
         Start the Slack Bolt Server from the GUI.
 
         Args:
-            origin (Any): The origin object containing the GUI elements.
+            origin (QWidget): The origin object containing the GUI elements.
         """
 
         start_check = ServerStartWarning()
@@ -166,12 +166,12 @@ class ServerControls:
             return
 
     @err_catcher(name=__name__)
-    def gui_stop_server(self, origin: Any):
+    def gui_stop_server(self, origin: QWidget):
         """
         Stop the Slack Bolt Server from the GUI.
 
         Args:
-            origin (Any): The origin object containing the GUI elements.
+            origin (QWidget): The origin object containing the GUI elements.
         """
 
         stop_check = ServerStopWarning()
@@ -184,12 +184,12 @@ class ServerControls:
             return
 
     @err_catcher(name=__name__)
-    def gui_reset_server_status(self, origin: Any):
+    def gui_reset_server_status(self, origin: QWidget):
         """
         Reset the Slack Bolt Server status from the GUI.
 
         Args:
-            origin (Any): The origin object containing the GUI elements.
+            origin (QWidget): The origin object containing the GUI elements.
         """
 
         self.reset_server_status()
@@ -198,12 +198,12 @@ class ServerControls:
         self.check_server_status(origin)
 
     @err_catcher(name=__name__)
-    def check_server_status(self, origin: Any):
+    def check_server_status(self, origin: QWidget):
         """
         Check the status of the Slack Bolt Server and update the GUI accordingly.
 
         Args:
-            origin (Any): The origin object containing the GUI elements.
+            origin (QWidget): The origin object containing the GUI elements.
 
         Returns:
             str: The current status of the Slack Bolt Server.
@@ -226,12 +226,12 @@ class ServerControls:
         return config["slack"]["server"].get("status")
 
     @err_catcher(name=__name__)
-    def toggle_server(self, origin: Any):
+    def toggle_server(self, origin: QWidget):
         """
         Toggle the Slack Bolt Server based on its current status.
 
         Args:
-            origin (Any): The origin object containing the GUI elements.
+            origin (QWidget): The origin object containing the GUI elements.
         """
 
         config = SlackConfig(self.core).load_config(mode="studio")

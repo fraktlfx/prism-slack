@@ -1,9 +1,9 @@
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QVBoxLayout, QHBoxLayout, QDialog, QLabel, QPushButton
-
 import os
 from pathlib import Path
+
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 
 # Create a dialog letting the user know that the Slack Studio Path was not found
@@ -13,19 +13,14 @@ class SlackStudioPathNotFound(QDialog):
         plugin_directory = Path(__file__).resolve().parents[5]
 
         self.setWindowTitle("Slack Config Warning")
-        self.setWindowIcon(
-            QIcon(os.path.join(plugin_directory, "Resources", "slack-icon.png"))
-        )
+        self.setWindowIcon(QIcon(os.path.join(plugin_directory, "Resources", "slack-icon.png")))
         self.setModal(True)
         self.setLayout(QVBoxLayout())
 
-        self.l_warning = QLabel(
-            "Studio Plugin is enabled but the Studio Path was not found"
-        )
+        self.l_warning = QLabel("Studio Plugin is enabled but the Studio Path was not found")
         self.l_warning.setAlignment(Qt.AlignCenter)
         self.l_warning_long = QLabel(
             """In order for Slack to operate as intended, please set the Slack Studio Path in the Prism Settings.
-            
             Slack configuration will continue to use the current Project to establish Slack settings."""
         )
         self.l_warning_long.setAlignment(Qt.AlignCenter)

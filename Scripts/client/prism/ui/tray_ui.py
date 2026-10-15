@@ -3,7 +3,7 @@ import socket
 from pathlib import Path
 
 from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QMenu, QAction
+from qtpy.QtWidgets import QAction, QMenu
 
 
 class TrayUI:
@@ -12,12 +12,10 @@ class TrayUI:
 
     # Create the Tray UI for the Slack Server
     def create_tray_slack_ui(self, menu, server_status, server_machine):
-        self.slack_menu = QMenu("Slack Server")
+        self.slack_menu = QMenu(f"Slack Server")
 
         plugin_directory = Path(__file__).resolve().parents[4]
-        self.slack_icon = QIcon(
-            os.path.join(plugin_directory, "Resources", "slack-icon.png")
-        )
+        self.slack_icon = QIcon(os.path.join(plugin_directory, "Resources", "slack-icon.png"))
         self.slack_menu.setIcon(self.slack_icon)
 
         self.status_server_action = QAction(server_status)
@@ -27,11 +25,13 @@ class TrayUI:
                 os.path.join(plugin_directory, "Resources", "running.png")
             )
             self.status_server_action.setIcon(self.slack_server_running_icon)
-        else:
+        elif server_status == "Not running":
             self.slack_server_stopped_icon = QIcon(
                 os.path.join(plugin_directory, "Resources", "stopped.png")
             )
             self.status_server_action.setIcon(self.slack_server_stopped_icon)
+        else:
+            raise RuntimeError(f"Unknown server status: {server_status}")
 
         self.stop_server_action = QAction("Stop Server")
         self.start_server_action = QAction("Start Server")
@@ -39,7 +39,7 @@ class TrayUI:
         if server_status == "Running" and server_machine == socket.gethostname():
             self.stop_server_action.setEnabled(True)
             self.start_server_action.setEnabled(False)
-        else:
+        elif server_status == "Not running":
             self.stop_server_action.setEnabled(False)
             self.start_server_action.setEnabled(True)
 

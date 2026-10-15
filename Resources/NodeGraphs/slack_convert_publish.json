@@ -1,0 +1,324 @@
+{
+    "nodes": [
+        {
+            "type": "Inputs",
+            "category": "Other",
+            "outputs": [
+                "callback",
+                "args",
+                "kwargs"
+            ],
+            "settings": {
+                "Create Input": {
+                    "type": "button",
+                    "script": "node.gui.addOutputTriggered(prefix=\"Input\")",
+                    "has_input": false
+                }
+            },
+            "hidden": true,
+            "execution_script": "callback = node.nodeEditor.settings.get(\"callback\") or \"\"\nargs = node.nodeEditor.settings[\"args\"] or []\nkwargs = node.nodeEditor.settings[\"kwargs\"] or {}\nkwargs[\"graphInputs\"] = graphInputs\n\nif node.parentNode:\n    if node.parentNode.nodeType == \"Loop\":\n        Index = graphInputs[0]\n        if len(graphInputs) > 1:\n            Outputs = graphInputs[1]\n\n    else:\n        if graphInputs:\n            Item = graphInputs[0]\n\n            if len(graphInputs) > 1:\n                Index = graphInputs[1]\n\n            if len(graphInputs) > 2:\n                Outputs = graphInputs[2]\n\nfor outpt in node.outputs:\n    if outpt in kwargs:\n        locals()[outpt] = kwargs[outpt]\n",
+            "name": "Inputs",
+            "connections": {
+                "inputs": {},
+                "outputs": {
+                    "execution": [
+                        {
+                            "node": "Get Shot",
+                            "port": "execution"
+                        }
+                    ]
+                }
+            },
+            "disabled": false,
+            "id": "7b16e258-0d7e-4e88-8106-266e8aa8101b",
+            "position": [
+                0.0,
+                0.0
+            ],
+            "unlocked": false
+        },
+        {
+            "type": "Get Shot",
+            "category": "Prism",
+            "outputs": [
+                "Shot"
+            ],
+            "settings": {
+                "Sequence": {
+                    "type": "text",
+                    "default": ""
+                },
+                "Shot": {
+                    "type": "text",
+                    "default": ""
+                },
+                "execution": {
+                    "has_parameter": false,
+                    "default": null,
+                    "type": null,
+                    "is_multi": false
+                }
+            },
+            "execution_script": "sequence = inputs[\"Sequence\"]\nshot = inputs[\"Shot\"]\nShot = core.entities.getShot(sequence=sequence, shot=shot)",
+            "name": "Get Shot",
+            "connections": {
+                "inputs": {
+                    "execution": {
+                        "node": "Inputs",
+                        "port": "execution"
+                    }
+                },
+                "outputs": {
+                    "execution": [
+                        {
+                            "node": "Get Media Version",
+                            "port": "execution"
+                        }
+                    ]
+                }
+            },
+            "disabled": false,
+            "id": "16f79d80-b850-4405-9500-b1dc510649a2",
+            "position": [
+                300.0,
+                0.0
+            ],
+            "unlocked": false
+        },
+        {
+            "type": "Get Media Version",
+            "category": "Prism",
+            "outputs": [
+                "Version"
+            ],
+            "settings": {
+                "Entity": {
+                    "has_parameter": false,
+                    "default": {}
+                },
+                "Identifier": {
+                    "type": "text",
+                    "default": ""
+                },
+                "Media Type": {
+                    "type": "combobox",
+                    "items": [
+                        "3drenders",
+                        "2drenders",
+                        "playblasts",
+                        "externalMedia"
+                    ],
+                    "default": "3drenders"
+                },
+                "Version": {
+                    "type": "text",
+                    "default": "latest"
+                },
+                "execution": {
+                    "has_parameter": false,
+                    "default": null,
+                    "type": null,
+                    "is_multi": false
+                }
+            },
+            "execution_script": "entity = inputs[\"Entity\"]\nidentifier = inputs[\"Identifier\"]\nmediaType = inputs[\"Media Type\"]\nversion = inputs[\"Version\"]\nresult = core.mediaProducts.getVersion(entity, identifier, mediaType, version)\nif result:\n    Version = core.paths.getMediaProductData(result[\"path\"], mediaType=mediaType)\nelse:\n    Version = result\n",
+            "name": "Get Media Version",
+            "connections": {
+                "inputs": {
+                    "execution": {
+                        "node": "Get Shot",
+                        "port": "execution"
+                    }
+                },
+                "outputs": {
+                    "execution": [
+                        {
+                            "node": "Get File from Media Version",
+                            "port": "execution"
+                        }
+                    ]
+                }
+            },
+            "disabled": false,
+            "id": "13a753d2-af6c-44bc-af28-202f2f2c2472",
+            "position": [
+                600.0,
+                0.0
+            ],
+            "unlocked": false
+        },
+        {
+            "type": "Get File from Media Version",
+            "category": "Prism",
+            "outputs": [
+                "File"
+            ],
+            "settings": {
+                "Version": {
+                    "has_parameter": false,
+                    "default": {}
+                },
+                "AOV": {
+                    "type": "text",
+                    "default": "beauty"
+                },
+                "execution": {
+                    "has_parameter": false,
+                    "default": null,
+                    "type": null,
+                    "is_multi": false
+                }
+            },
+            "execution_script": "version = inputs[\"Version\"]\naov = inputs[\"AOV\"]\nFile = core.mediaProducts.getFileFromVersion(version, aov, findExisting=True)\nif not File:\n    raise Exception(\"no valid mdeia file\")",
+            "name": "Get File from Media Version",
+            "connections": {
+                "inputs": {
+                    "execution": {
+                        "node": "Get Media Version",
+                        "port": "execution"
+                    }
+                },
+                "outputs": {
+                    "execution": [
+                        {
+                            "node": "Convert Media",
+                            "port": "execution"
+                        }
+                    ],
+                    "File": [
+                        {
+                            "node": "Convert Media",
+                            "port": "Filepath"
+                        }
+                    ]
+                }
+            },
+            "disabled": false,
+            "id": "ca08ae6d-30fb-49e0-adef-a6919622d08c",
+            "position": [
+                900.0,
+                0.0
+            ],
+            "unlocked": false
+        },
+        {
+            "type": "Slack Media Publish",
+            "category": "Slack",
+            "outputs": [
+                "Result"
+            ],
+            "settings": {
+                "File": {
+                    "type": "text",
+                    "default": ""
+                },
+                "Comments": {
+                    "type": "multilinetext",
+                    "default": ""
+                },
+                "Status": {
+                    "type": "combobox",
+                    "items": [
+                        "Work in Progress",
+                        "Request Review"
+                    ]
+                },
+                "execution": {
+                    "has_parameter": false,
+                    "default": null,
+                    "type": null,
+                    "is_multi": false
+                }
+            },
+            "execution_script": "from pathlib import Path\n\nfile_path = inputs.get('File', '')\nif not file_path:\n    raise Exception('No File provided')\nfile_path = file_path.replace('.####', '')\n\nprint(f\"File path type: {type(file_path)}, File path value: {file_path}\")\ncomments = inputs.get('Comments', '')\nstatus = inputs.get('Status') or 'Work in Progress'\n\nslack = core.getPlugin('Slack')\nif not slack:\n    raise Exception('Slack plugin not loaded')\n\nproject = slack.get_current_project()\n\nversioninfo_str = f\"{slack.get_version_folder(file_path)}/versioninfo.json\".replace('\\\\', '/')\nversioninfo = Path(versioninfo_str)\n\nstate_data = {'state_type': 'execution_graph', 'ui': 'EG', 'app': 'Standalone', 'project': project, 'comments': comments, 'versioninfo': versioninfo}\n\nif slack.get_server_approvals():\n    state_data['status'] = status\nelse:\n    state_data['status'] = None\n\ntry:\n    slack.publish_to_slack(file_path, state_data)\n    Result = {'success': True, 'message': 'Successfully published to Slack', 'file': file_path, 'state_data': state_data}\nexcept Exception as e:\n    Result = {'success': False, 'message': f\"Failed to publish to Slack: {str(e)}\", 'file': file_path, 'state_data': state_data}\n",
+            "name": "Slack Media Publish",
+            "connections": {
+                "inputs": {
+                    "execution": {
+                        "node": "Convert Media",
+                        "port": "execution"
+                    },
+                    "File": {
+                        "node": "Convert Media",
+                        "port": "Outputpath"
+                    }
+                },
+                "outputs": {}
+            },
+            "disabled": false,
+            "id": "05a5a728-c01c-4a7b-9075-16af347670b5",
+            "position": [
+                1500.0,
+                0.0
+            ],
+            "unlocked": false
+        },
+        {
+            "type": "Convert Media",
+            "category": "Prism",
+            "outputs": [
+                "Outputpath"
+            ],
+            "settings": {
+                "Filepath": {
+                    "type": "text",
+                    "default": ""
+                },
+                "Format": {
+                    "type": "text",
+                    "default": ""
+                },
+                "Preset": {
+                    "type": "text",
+                    "default": ""
+                },
+                "execution": {
+                    "has_parameter": false,
+                    "default": null,
+                    "type": null,
+                    "is_multi": false
+                }
+            },
+            "execution_script": "filepath = inputs[\"Filepath\"]\next = inputs[\"Format\"]\npresetName = inputs[\"Preset\"]\n\nif not isinstance(filepath, list):\n    filepath = [filepath]\n\nif presetName:\n    preset = core.getPlugin(\"MediaExtension\").mediaExtension.getConversionPreset(presetName)\nelse:\n    preset = {\n                \"settings\": {\n                    \"outputFormat\": ext\n                }\n            }\n\nmType = core.mediaProducts.getMediaTypeFromPath(filepath[0])\noutputPath = core.getPlugin(\"MediaExtension\").convertMediaWithPreset(filepath, preset, generateOutputpath=True, mediaType=mType)\nOutputpath = outputPath",
+            "name": "Convert Media",
+            "connections": {
+                "inputs": {
+                    "execution": {
+                        "node": "Get File from Media Version",
+                        "port": "execution"
+                    },
+                    "Filepath": {
+                        "node": "Get File from Media Version",
+                        "port": "File"
+                    }
+                },
+                "outputs": {
+                    "execution": [
+                        {
+                            "node": "Slack Media Publish",
+                            "port": "execution"
+                        }
+                    ],
+                    "Outputpath": [
+                        {
+                            "node": "Slack Media Publish",
+                            "port": "File"
+                        }
+                    ]
+                }
+            },
+            "disabled": false,
+            "id": "08943a59-bf70-49e4-bdc5-11d43c006ffb",
+            "position": [
+                1200.0,
+                0.0
+            ],
+            "unlocked": false
+        }
+    ],
+    "settings": {
+        "callback": "",
+        "args": [],
+        "kwargs": {}
+    }
+}

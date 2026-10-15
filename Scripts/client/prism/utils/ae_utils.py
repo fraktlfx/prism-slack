@@ -2,8 +2,8 @@ import os
 import re
 import glob
 
-from .determine_frame_range import determine_frame_range
 from .logging import log_and_print
+from .determine_frame_range import determine_frame_range
 
 
 AE_FRAME_TOKEN_PATTERN = re.compile(r"\[(#+)\]")
@@ -18,9 +18,7 @@ def normalize_path(path: str) -> str:
     return path.replace("\\", "/")
 
 
-def _find_aftereffects_sequence_matches(
-    sequence_base_output: str, ext: str
-) -> list[str]:
+def _find_aftereffects_sequence_matches(sequence_base_output: str, ext: str) -> list[str]:
     sequence_pattern = AE_FRAME_TOKEN_PATTERN.sub("*", sequence_base_output)
     sequence_pattern = FRAME_HASH_TOKEN_PATTERN.sub("*", sequence_pattern)
 
@@ -86,13 +84,9 @@ def _build_sequence_path(
     return sequence_path
 
 
-def _resolve_image_sequence_output(
-    core: object, sequence_base_output: str
-) -> str | None:
+def _resolve_image_sequence_output(core: object, sequence_base_output: str) -> str | None:
     for ext in IMAGE_EXTS:
-        sequence_matches = _find_aftereffects_sequence_matches(
-            sequence_base_output, ext
-        )
+        sequence_matches = _find_aftereffects_sequence_matches(sequence_base_output, ext)
 
         if not sequence_matches:
             continue
@@ -171,9 +165,7 @@ def get_aftereffects_frame_data(output: str) -> dict[str, str]:
     _, sequence_base_output = normalize_aftereffects_output_patterns(normalized_output)
 
     for ext in IMAGE_EXTS:
-        sequence_matches = _find_aftereffects_sequence_matches(
-            sequence_base_output, ext
-        )
+        sequence_matches = _find_aftereffects_sequence_matches(sequence_base_output, ext)
 
         if not sequence_matches:
             continue

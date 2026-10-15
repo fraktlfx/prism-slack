@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QDialog, QPushButton
+from qtpy.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 
 # Create a dialog to make sure the user wants to start the server

@@ -3,7 +3,6 @@ from .convert_image_sequence import check_conversion
 from .initial_state_data import get_state_data
 from .logging import log_and_print
 from .ae_utils import resolve_aftereffects_output, get_aftereffects_frame_data
-from .deadline_submission import deadline_submission_script
 
 __all__ = [
     "check_publish_options",
@@ -13,5 +12,4 @@ __all__ = [
     "log_and_print",
     "resolve_aftereffects_output",
     "get_aftereffects_frame_data",
-    "deadline_submission_script",
 ]

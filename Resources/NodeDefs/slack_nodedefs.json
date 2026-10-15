@@ -1,0 +1,30 @@
+[
+    {
+        "type": "Slack Media Publish",
+        "category": "Slack",
+        "outputs": [
+            "Result"
+        ],
+        "settings": {
+            "File":
+                {
+                    "type": "text",
+                    "default": ""
+                },
+            "Comments":
+                {
+                    "type": "multilinetext",
+                    "default": ""
+                },
+            "Status":
+                {
+                    "type": "combobox",
+                    "items": [
+                        "Work in Progress",
+                        "Request Review"
+                    ]
+                }
+        },
+        "execution_script": "from pathlib import Path\n\nfile_path = inputs.get('File', '')\nif not file_path:\n    raise Exception('No File provided')\nfile_path = file_path.replace('.####', '')\n\nprint(f\"File path type: {type(file_path)}, File path value: {file_path}\")\ncomments = inputs.get('Comments', '')\nstatus = inputs.get('Status') or 'Work in Progress'\n\nslack = core.getPlugin('Slack')\nif not slack:\n    raise Exception('Slack plugin not loaded')\n\nproject = slack.get_current_project()\n\nversioninfo_str = f\"{slack.get_version_folder(file_path)}/versioninfo.json\".replace('\\\\', '/')\nversioninfo = Path(versioninfo_str)\n\nstate_data = {'state_type': 'execution_graph', 'ui': 'EG', 'app': 'Standalone', 'project': project, 'comments': comments, 'versioninfo': versioninfo}\n\nif slack.get_server_approvals():\n    state_data['status'] = status\nelse:\n    state_data['status'] = None\n\ntry:\n    slack.publish_to_slack(file_path, state_data)\n    Result = {'success': True, 'message': 'Successfully published to Slack', 'file': file_path, 'state_data': state_data}\nexcept Exception as e:\n    Result = {'success': False, 'message': f\"Failed to publish to Slack: {str(e)}\", 'file': file_path, 'state_data': state_data}\n"
+    }
+]

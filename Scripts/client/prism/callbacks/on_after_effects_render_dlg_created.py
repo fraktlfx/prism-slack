@@ -1,6 +1,4 @@
-from typing import Any
-
-from prism_slack.client.prism.api import API
+﻿from prism_slack.client.prism.api import API
 from prism_slack.client.slack.api import get_channel_id, get_channel_users, get_studio_users
 
 from qtpy.QtCore import Qt
@@ -16,10 +14,11 @@ from qtpy.QtWidgets import (
     QLayout,
 )
 
+from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
-def onAfterEffectsRenderDlgCreated(core: Any, dlg: QWidget):
-    """Handle the creation of the AE Render Dialog and add Slack integration UI."""
 
+@err_catcher(__name__)
+def onAfterEffectsRenderDlgCreated(core: object, dlg: QWidget):
     # Only build once
     if hasattr(dlg, "gb_slack"):
         return
@@ -33,43 +32,41 @@ def onAfterEffectsRenderDlgCreated(core: Any, dlg: QWidget):
 
     dlg.lo_slack_group = QVBoxLayout(dlg.gb_slack)
     dlg.lo_slack_group.setContentsMargins(-1, 15, -1, -1)
-    dlg.gb_slack.toggled.connect(lambda checked: _slack_toggle(core, dlg, checked))
 
-    if not hasattr(dlg, "lo_main"):
+    # ---- Insert into dialog (IMPORTANT) ----
+    # Put it right above the button box if present, otherwise append
+    if hasattr(dlg, "lo_main"):
+        if hasattr(dlg, "bb_main"):
+            idx = dlg.lo_main.indexOf(dlg.bb_main)
+            if idx != -1:
+                dlg.lo_main.insertWidget(idx, dlg.gb_slack)
+            else:
+                dlg.lo_main.addWidget(dlg.gb_slack)
+        else:
+            dlg.lo_main.addWidget(dlg.gb_slack)
+    else:
+        # last resort: do nothing / or raise
         return
 
-    bb_main = getattr(dlg, "bb_main")
-
-    if bb_main is not None:
-        idx = dlg.lo_main.indexOf(bb_main)
-
-        if idx != -1:
-            dlg.lo_main.insertWidget(idx, dlg.gb_slack)
-            return
-
-    dlg.lo_main.addWidget(dlg.gb_slack)
+    # Build contents lazily on toggle (optional)
+    dlg.gb_slack.toggled.connect(lambda checked: _slack_toggle(core, dlg, checked))
 
 
-def _slack_toggle(core: Any, dlg: QWidget, checked: bool):
-    """Toggle the Slack UI contents in the AE Render Dialog based on the group box state."""
-
+@err_catcher(__name__)
+def _slack_toggle(core: object, dlg: QWidget, checked: bool):
     if checked:
         if getattr(dlg, "_slack_built", False):
             return
         _build_slack_contents(core, dlg)
         dlg._slack_built = True
     else:
+        # If you want to *remove* widgets when unchecked:
         _clear_layout(dlg.lo_slack_group)
         dlg._slack_built = False
 
 
-def _build_slack_contents(core: Any, dlg: QWidget):
-    """
-    Build the Slack UI contents in the AE Render Dialog.
-    Args:
-        core (Any): The core application object.
-        dlg (QWidget): The AE Render Dialog object.
-    """
+@err_catcher(__name__)
+def _build_slack_contents(core: object, dlg: QWidget):
     # Widgets
     dlg.cb_slackUserPool = QComboBox()
     dlg.cb_slackUserPool.setPlaceholderText("Select Artist")
@@ -100,6 +97,17 @@ def _build_slack_contents(core: Any, dlg: QWidget):
     dlg.lo_slack_group.addLayout(row_pub)
     dlg.lo_slack_group.addLayout(row_notify)
 
+    # Approvals row (conditional)
+    if API(core).get_server_approvals() is True:
+        row_appr = QHBoxLayout()
+        row_appr.setContentsMargins(10, 5, 0, 0)
+        dlg.l_approvals = QLabel("Status:")
+        dlg.cb_approvals = QComboBox()
+        dlg.cb_approvals.addItems(["Work in Progress", "Request Review"])
+        row_appr.addWidget(dlg.l_approvals)
+        row_appr.addWidget(dlg.cb_approvals)
+        dlg.lo_slack_group.addLayout(row_appr)
+
     # Comments
     dlg.te_slackComments = QTextEdit()
     dlg.te_slackComments.setPlaceholderText("(Optional) Leave your Slack comments here")
@@ -108,28 +116,26 @@ def _build_slack_contents(core: Any, dlg: QWidget):
 
 def _clear_layout(layout: QLayout):
     """Safely deletes all items in a layout (widgets + nested layouts)."""
-
     while layout.count():
         item = layout.takeAt(0)
         w = item.widget()
-        lo = item.layout()
+        l = item.layout()
         if w is not None:
             w.setParent(None)
             w.deleteLater()
-        elif lo is not None:
-            _clear_layout(lo)
-            lo.deleteLater()
+        elif l is not None:
+            _clear_layout(l)
+            l.deleteLater()
 
 
-def _populate_user_pool(core: Any, dlg: QWidget):
+def _populate_user_pool(core: object, dlg: object):
     """
     Populate the Slack user pool dropdown in the AE Render Dialog.
 
     Args:
-        core (Any): The core application object.
-        dlg (QWidget): The AE Render Dialog object.
+        core (object): The core application object.
+        dlg (object): The AE Render Dialog object.
     """
-
     try:
         access_token = API(core).get_access_token()
         proj = API(core).get_current_project()

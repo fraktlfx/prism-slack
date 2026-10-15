@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QVBoxLayout, QHBoxLayout, QDialog, QLabel, QPushButton
+from qtpy.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 
 # Create a dialog to warn the user that the user is not in the channel

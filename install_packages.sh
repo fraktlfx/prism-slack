@@ -37,7 +37,11 @@ function install_packages() {
     "$python_command" -m pip install \
         --target "$target_directory" \
         slack_sdk \
-        slack_bolt
+        slack_bolt \
+        requests \
+        flask \
+        py-machineid \
+        cryptography
 }
 
 function main() {

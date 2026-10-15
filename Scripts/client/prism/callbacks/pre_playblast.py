@@ -1,8 +1,4 @@
-from prism_slack.client.prism.utils import (
-    log_and_print,
-    check_publish_options,
-    check_deadline_option,
-)
+﻿from prism_slack.client.prism.utils import check_publish_options, check_deadline_option, log_and_print
 from prism_slack.client.slack.notifications import notify_before_publish
 
 
@@ -15,14 +11,11 @@ def prePlayblast(core: object, **kwargs: dict[str, str]):
         **kwargs (dict[str, str]): Additional keyword arguments
     """
     log_and_print(20, "[PrePlayblast] prePlayblast callback triggered.")
-
     app = core.appPlugin.pluginName
 
     state = kwargs.get("state", None)
 
-    if not check_publish_options(
-        core=core, state=state, app=app, option="notification"
-    ):
+    if not check_publish_options(core=core, state=state, app=app, option="notification"):
         return
 
     if check_deadline_option(core, state):

@@ -2,20 +2,31 @@ import os
 from pathlib import Path
 
 from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QDialog, QLabel, QLineEdit, QPushButton
+from qtpy.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+)
 
 
 # Create dialog used to input things like the Slack OAuth token or the App-Level Token
 class InputDialog(QDialog):
-    def __init__(self, title):
+    def __init__(self, title: str):
+        """
+        Initialize the input dialog.
+        Args:
+            title (str): The title of the input dialog.
+        """
+
         super(InputDialog, self).__init__()
 
         plugin_directory = Path(__file__).resolve().parents[5]
 
         self.setWindowTitle("Slack")
-        self.setWindowIcon(
-            QIcon(os.path.join(plugin_directory, "Resources", "slack-icon.png"))
-        )
+        self.setWindowIcon(QIcon(os.path.join(plugin_directory, "Resources", "slack-icon.png")))
         self.setModal(True)
 
         self.layout = QVBoxLayout()
@@ -39,4 +50,11 @@ class InputDialog(QDialog):
         self.layout.addLayout(self.button_layout)
 
     def get_input(self):
+        """
+        Get the input text from the dialog.
+
+        Returns:
+            str: The input text.
+        """
+
         return self.input_field.text()

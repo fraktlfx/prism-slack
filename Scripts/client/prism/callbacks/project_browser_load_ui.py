@@ -1,33 +1,33 @@
-import os
+﻿import os
 import webbrowser
-from typing import Any
 
-from qtpy.QtWidgets import QAction, QMenu
+from prism_slack.client.prism.api import API
+from qtpy.QtWidgets import QAction, QMenu, QWidget
 
 
-def projectBrowser_loadUI(core: Any, origin: Any):
+def projectBrowser_loadUI(core: object, origin: QWidget):
     """
     Load the Slack UI in the project browser window.
 
     Args:
-        core (Any): The core application object.
-        origin (Any): The ProjectBrowser window instance.
+        core (object): The core application object.
+        origin (QWidget): The ProjectBrowser window instance.
     """
     ui = ProjectBrowserUI(core)
     ui.create_project_browser_ui(origin)
 
 
 class ProjectBrowserUI:
-    def __init__(self, core):
+    def __init__(self, core: object):
         self.core = core
 
     # Create the Project Browser UI for the Slack Server
-    def create_project_browser_ui(self, origin):
+    def create_project_browser_ui(self, origin: QWidget):
         """
         Add Slack menu to the Project Browser menu bar.
 
         Args:
-            origin: The ProjectBrowser window instance.
+            origin (QWidget): The ProjectBrowser window instance.
         """
         # Create Slack menu
         slack_menu = QMenu("Slack", origin)
@@ -35,7 +35,9 @@ class ProjectBrowserUI:
         # Add menu actions
         self.website = QAction("Website", origin)
         self.website_icon = self.core.media.getColoredIcon(
-            os.path.join(self.core.prismRoot, "Scripts", "UserInterfacesPrism", "open-web.png")
+            os.path.join(
+                self.core.prismRoot, "Scripts", "UserInterfacesPrism", "open-web.png"
+            )
         )
         self.website.setIcon(self.website_icon)
         self.website.triggered.connect(
@@ -44,7 +46,9 @@ class ProjectBrowserUI:
 
         self.documentation = QAction("Documentation", origin)
         self.documentation_icon = self.core.media.getColoredIcon(
-            os.path.join(self.core.prismRoot, "Scripts", "UserInterfacesPrism", "book.png")
+            os.path.join(
+                self.core.prismRoot, "Scripts", "UserInterfacesPrism", "book.png"
+            )
         )
         self.documentation.setIcon(self.documentation_icon)
         self.documentation.triggered.connect(

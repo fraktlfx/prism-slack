@@ -3,7 +3,10 @@ import subprocess
 
 from .logging import log_and_print
 
+from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
+
+@err_catcher(name=__name__)
 def check_conversion(core: object, state_data: dict, ext: str, output_path: str):
     """
     Check if the output needs to be converted based on state settings.
@@ -48,6 +51,7 @@ def check_conversion(core: object, state_data: dict, ext: str, output_path: str)
         raise ValueError("Invalid range type.")
 
 
+@err_catcher(name=__name__)
 def _handle_media_conversion_checkbox(state_data: dict, core: object, outputPath: str):
     """
     Handle media conversion based on the media extension.
@@ -57,95 +61,126 @@ def _handle_media_conversion_checkbox(state_data: dict, core: object, outputPath
         core (object): The core application object.
         outputPath (str): The original output file path.
     """
-
-    conversion_option = state_data["converted_extension"].lower()
-    conversion_option = _retrieve_extension(conversion_option)
-    base = os.path.basename(outputPath).split(".")[0]
-    top_directory = os.path.dirname(outputPath)
+    log_and_print(20, f"Media conversion enabled. Converting output: {outputPath}")
+    # Example path: P:\Test_Project\03_Production\Shots\sq010\sh010\Renders\3dRender\Lighting\v0105\beauty\sq010-sh010_Lighting_v0105_beauty.mp4
+    option = _retrieve_extension(state_data["converted_extension"].lower())  # mp4, png, etc.
+    base = os.path.basename(outputPath).split(".")[0]  # sq010-sh010_Lighting_v0105_beauty
+    top_directory = os.path.dirname(
+        outputPath
+    )  # P:\Test_Project\03_Production\Shots\sq010\sh010\Renders\3dRender\Lighting\v0105\beauty\
+    output_list = []
 
     prism_version = core.version.replace("v", "")
 
     if prism_version < "2.1.2":
-        try:
-            if state_data["state_type"] == "pb":
-                if conversion_option in ["mp4", "mov"]:
-                    converted_file = f"{top_directory} ({conversion_option})/{base} ({conversion_option}).{conversion_option}"
-                    existing_file = _existing_path(converted_file)
-                    if existing_file:
-                        return [existing_file]
+        if state_data["state_type"] == "pb":
+            if option in ["mp4", "mov"]:
+                converted_file = f"{top_directory} ({option})/{base} ({option}).{option}"
+                output_list.append(converted_file)
 
-                elif conversion_option in ["png", "jpg", "tif"]:
-                    framePad = "#" * core.framePadding
-                    sequence = f"{top_directory} ({conversion_option})/{base} ({conversion_option}).{framePad}.{conversion_option}"
-                    convert = _convert_image_sequence(core, sequence, state_data)
-                    existing_file = _existing_path(convert)
-                    if existing_file:
-                        return [existing_file]
+            elif option in ["png", "jpg", "tif"]:
+                framePad = "#" * core.framePadding
+                sequence = f"{top_directory} ({option})/{base} ({option}).{framePad}.{option}"
+                convert = _convert_image_sequence(core, sequence, state_data)
+                output_list.append(convert)
 
-            elif state_data["state_type"] == "render":
-                aov = os.path.dirname(outputPath).split("/")[-1]
-                version_folder = os.path.dirname(os.path.dirname(outputPath)).split(
-                    "/"
-                )[-1]
-                top_directory = os.path.dirname(
-                    os.path.dirname(os.path.dirname(outputPath))
-                )
-                version_directory_ext = f"{version_folder} ({conversion_option})"
+        elif state_data["state_type"] == "render":
+            if state_data["app"] == "Nuke":
+                version_folder = os.path.dirname(outputPath).split("/")[-1]
+                top_directory = os.path.dirname(outputPath)
+                version_directory_ext = f"{version_folder} ({option})"
+                base = os.path.basename(outputPath).split(".")[0]
                 base = base.replace(version_folder, version_directory_ext)
+                nuke_target_directory = f"{top_directory} ({option})"
 
-                if conversion_option in ["mp4", "mov"]:
-                    converted_file = f"{top_directory}/{version_directory_ext}/{aov}/{base}.{conversion_option}"
-                    existing_file = _existing_path(converted_file)
-                    if existing_file:
-                        return [existing_file]
+                if option in ["mp4", "mov"]:
+                    converted_file = f"{nuke_target_directory}/{base}.{option}"
+                    output_list.append(converted_file)
+                    return output_list
 
-                elif conversion_option in ["png", "jpg", "tif"]:
-                    if state_data["app"] == "AfterEffects":
-                        framePad = "#" * core.framePadding
-                    else:
-                        framePad = "#" * core.framePadding
-                    sequence = f"{top_directory}/{version_directory_ext}/{aov}/{base}.{framePad}.{conversion_option}"
+                elif option in ["png", "jpg", "jpeg", "tif", "tiff", "exr"]:
+                    framePad = "#" * core.framePadding
+                    sequence = f"{nuke_target_directory}/{base}.{framePad}.{option}"
                     convert = _convert_image_sequence(core, sequence, state_data)
-                    existing_file = _existing_path(convert)
-                    if existing_file:
-                        return [existing_file]
-        except Exception:
-            log_and_print(
-                20,
-                "Could not find the converted file or media. Trying to locate in the same folder as image(s)",
-            )
+                    output_list.append(convert)
+                    return output_list
+
+            aov = os.path.dirname(outputPath).split("/")[-1]
+            version_folder = os.path.dirname(os.path.dirname(outputPath)).split("/")[-1]
+            top_directory = os.path.dirname(os.path.dirname(os.path.dirname(outputPath)))
+            version_directory_ext = f"{version_folder} ({option})"
+            base = base.replace(version_folder, version_directory_ext)
+
+            if option in ["mp4", "mov"]:
+                converted_file = f"{top_directory}/{version_directory_ext}/{aov}/{base}.{option}"
+                output_list.append(converted_file)
+
+            elif option in ["png", "jpg", "tif"]:
+                if state_data["app"] == "AfterEffects":
+                    framePad = "#####"
+                else:
+                    framePad = "#" * core.framePadding
+                sequence = (
+                    f"{top_directory}/{version_directory_ext}/{aov}/{base}.{framePad}.{option}"
+                )
+                convert = _convert_image_sequence(core, sequence, state_data)
+                output_list.append(convert)
+
+        return output_list
 
     else:
         try:
             if state_data["state_type"] == "pb":
-                if conversion_option in ["mp4", "mov"]:
-                    converted_file = f"{top_directory}/{base}.{conversion_option}"
+                if option in ["mp4", "mov"]:
+                    converted_file = f"{top_directory}/{base}.{option}"
                     existing_file = _existing_path(converted_file)
                     if existing_file:
                         log_and_print(20, f"Found converted file at: {existing_file}")
                         return [existing_file]
 
-                elif conversion_option in ["png", "jpg", "tif"]:
+                elif option in ["png", "jpg", "tif"]:
                     framePad = "#" * core.framePadding
-                    sequence = f"{top_directory}/{base}.{framePad}.{conversion_option}"
+                    sequence = f"{top_directory}/{base}.{framePad}.{option}"
                     convert = _convert_image_sequence(core, sequence, state_data)
                     existing_file = _existing_path(convert)
                     if existing_file:
                         return [existing_file]
 
             if state_data["state_type"] == "render":
-                if conversion_option in ["mp4", "mov"]:
-                    converted_file = f"{top_directory}/{base}.{conversion_option}"
+                if core.appPlugin.pluginName == "Nuke":
+                    top_directory = os.path.dirname(outputPath)
+                    base = os.path.basename(outputPath).split(".")[0]
+                    log_and_print(20, f"Top Directory: {top_directory} \nBase: {base}")
+
+                    if option in ["mp4", "mov"]:
+                        converted_file = f"{top_directory}/{base}.{option}"
+                        output_list.append(converted_file)
+                        return output_list
+
+                    elif option in ["png", "jpg", "jpeg", "tif", "tiff", "exr"]:
+                        log_and_print(
+                            20,
+                            f"Preparing to convert image sequence with base: {base} and option: {option}",
+                        )
+                        framePad = "#" * core.framePadding
+                        sequence = f"{top_directory}/{base}.{framePad}.{option}"
+                        log_and_print(20, f"Constructed sequence path for conversion: {sequence}")
+                        convert = _convert_image_sequence(core, sequence, state_data)
+                        output_list.append(convert)
+                        return output_list
+
+                if option in ["mp4", "mov"]:
+                    converted_file = f"{top_directory}/{base}.{option}"
                     existing_file = _existing_path(converted_file)
                     if existing_file:
                         return [existing_file]
 
-                elif conversion_option in ["png", "jpg", "tif"]:
+                elif option in ["png", "jpg", "tif"]:
                     if state_data["app"] == "AfterEffects":
                         framePad = "#" * core.framePadding
                     else:
                         framePad = "#" * core.framePadding
-                    sequence = f"{top_directory}/{base}.{framePad}.{conversion_option}"
+                    sequence = f"{top_directory}/{base}.{framePad}.{option}"
                     convert = _convert_image_sequence(core, sequence, state_data)
                     existing_file = _existing_path(convert)
                     if existing_file:
@@ -157,12 +192,9 @@ def _handle_media_conversion_checkbox(state_data: dict, core: object, outputPath
                 "Could not find the converted file or media. Please check your conversion settings and ensure the file has been converted.",
             )
 
-        raise FileNotFoundError(
-            f"Could not locate converted media for {outputPath} using conversion option '{conversion_option}'."
-        )
-
 
 # Convert an image sequence to a video
+@err_catcher(name=__name__)
 def _convert_image_sequence(core: object, sequence: str, state_data: dict):
     """
     Start the conversion process from an image sequence to an mp4 video using ffmpeg.
@@ -188,9 +220,7 @@ def _convert_image_sequence(core: object, sequence: str, state_data: dict):
     fps = state_data["fps"]
 
     # Run ffmpeg to create the video
-    output_file = _convert_to_mp4(
-        core, input_sequence, start_frame, fps, contstructed_file
-    )
+    output_file = _convert_to_mp4(core, input_sequence, start_frame, fps, contstructed_file)
 
     return output_file
 
@@ -210,7 +240,12 @@ def _convert_sequence_path(core: object, sequence: str, state_data: dict):
         if state_data["convert_media"] is True:
             input_sequence = sequence.replace("#" * core.framePadding, "%04d")
         else:
-            input_sequence = sequence.replace(".$F4.", ".%04d.")
+            # Houdini output can be tokenized as #### or $F4 depending on context.
+            input_sequence = sequence
+            input_sequence = input_sequence.replace(".$F4.", ".%04d.")
+            input_sequence = input_sequence.replace("$F4", "%04d")
+            input_sequence = input_sequence.replace("#" * core.framePadding, "%04d")
+            input_sequence = input_sequence.replace("####", "%04d")
 
     elif state_data["app"] == "Cinema4D":
         if state_data["convert_media"] is True:
@@ -219,7 +254,14 @@ def _convert_sequence_path(core: object, sequence: str, state_data: dict):
             input_sequence = sequence.replace("..", ".%04d.")
 
     elif state_data["app"] == "AfterEffects":
-        input_sequence = sequence.replace("#" * core.framePadding, "%04d")
+        try:
+            input_sequence = sequence.replace("#" * core.framePadding, "%04d")
+        except Exception as e:
+            log_and_print(
+                30,
+                f"Error converting After Effects sequence path: {e}\nTrying alternative pattern with 5 digits.",
+            )
+            input_sequence = sequence.replace("#####", "%05d")
 
     else:
         input_sequence = sequence.replace("#" * core.framePadding, "%04d")
@@ -284,7 +326,10 @@ def _convert_to_mp4(
         )
     except subprocess.CalledProcessError as e:
         print(f"Error running ffmpeg: {e.stderr.decode()}")
-        return
+        # Fall back to the first frame path so callers do not receive None.
+        frame_file = input_sequence.replace("%05d", start_frame).replace("%04d", start_frame)
+        frame_file = frame_file.replace("\\", "/")
+        return frame_file if os.path.exists(frame_file) else None
 
     output_file = output_file.replace("\\", "/")
 
@@ -307,20 +352,50 @@ def _handle_scene_shot_custom_node(state_data: dict, core: object, output_path: 
     if int(state_data["start_frame"]) == int(state_data["end_frame"]):
         if core.appPlugin.pluginName == "Houdini":
             file = output_path.replace("$F4", state_data["start_frame"])
+            file = file.replace("#" * core.framePadding, state_data["start_frame"])
+            file = file.replace("####", state_data["start_frame"])
 
         elif core.appPlugin.pluginName == "Cinema4D":
             file = output_path.replace("..", f".{state_data['start_frame']}.")
 
         elif core.appPlugin.pluginName == "AfterEffects":
-            file = output_path.replace(
-                "#" * core.framePadding, state_data["start_frame"]
-            )
+            file = output_path.replace("#####", state_data["start_frame"])
 
         else:
-            file = output_path.replace(
-                "#" * core.framePadding, state_data["start_frame"]
-            )
+            file = output_path.replace("#" * core.framePadding, state_data["start_frame"])
 
+        outputList = [file]
+
+    elif int(state_data["start_frame"]) < int(state_data["end_frame"]):
+        convert = _convert_image_sequence(core, output_path, state_data)
+        outputList = [convert]
+
+    else:
+        raise ValueError("Invalid range.")
+
+    return outputList
+
+
+def _handle_custom(state_data: dict, core: object, output_path: str):
+    if int(state_data["start_frame"]) == int(state_data["end_frame"]):
+        file = output_path.replace("#" * core.framePadding, state_data["start_frame"])
+        outputList = [file]
+
+    elif int(state_data["start_frame"]) < int(state_data["end_frame"]):
+        convert = _convert_image_sequence(core, output_path, state_data)
+        outputList = [convert]
+
+    else:
+        raise ValueError("Invalid range.")
+
+    return outputList
+
+
+def _handle_node(state_data: dict, core: object, output_path: str):
+    if int(state_data["start_frame"]) == int(state_data["end_frame"]):
+        file = output_path.replace("$F4", state_data["start_frame"])
+        file = file.replace("#" * core.framePadding, state_data["start_frame"])
+        file = file.replace("####", state_data["start_frame"])
         outputList = [file]
 
     elif int(state_data["start_frame"]) < int(state_data["end_frame"]):

@@ -1,5 +1,13 @@
+﻿from prism_slack.client.prism.api import API
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QHBoxLayout, QLabel, QCheckBox, QComboBox, QTextEdit, QWidget
+from qtpy.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QHBoxLayout,
+    QLabel,
+    QTextEdit,
+    QWidget,
+)
 
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
@@ -10,7 +18,7 @@ class StateManagerUI:
 
     # Create the Slack section of the State Manager UI
     @err_catcher(__name__)
-    def createStateManagerSlackUI(self, state):
+    def createStateManagerSlackUI(self, state: object):
         state.cb_slackUserPool = QComboBox()
         state.cb_slackUserPool.setPlaceholderText("Select Artist")
 
@@ -28,23 +36,39 @@ class StateManagerUI:
         state.chb_slackNotify = QCheckBox()
         state.chb_slackNotify.setLayoutDirection(Qt.RightToLeft)
 
-        lo_slack_publish.addWidget(state.l_slackPublish)
-        lo_slack_publish.addWidget(state.chb_slackPublish)
+        if state.className != "Export" and state.className != "USD Export":
+            lo_slack_publish.addWidget(state.l_slackPublish)
+            lo_slack_publish.addWidget(state.chb_slackPublish)
+
         lo_slack_notify.addWidget(state.l_slackNotify)
         lo_slack_notify.addWidget(state.chb_slackNotify)
         lo_slack_notify.addWidget(state.cb_slackUserPool)
 
+        lo_slack_approvals = QHBoxLayout()
+        lo_slack_approvals.setContentsMargins(10, 5, 0, 0)
+        state.l_approvals = QLabel("Status:")
+        state.cb_approvals = QComboBox()
+        state.cb_approvals.addItems(["Work in Progress", "Request Review"])
+
+        if state.className != "Export" and state.className != "USD Export":
+            lo_slack_approvals.addWidget(state.l_approvals)
+            lo_slack_approvals.addWidget(state.cb_approvals)
+
         state.lo_slack_publish = lo_slack_publish
         state.lo_slack_notify = lo_slack_notify
-        
-        if state.className != "Export":
+        state.lo_slack_approvals = lo_slack_approvals
+
+        if state.className != "Export" and state.className != "USD Export":
             state.gb_slack.layout().addLayout(lo_slack_publish)
         state.gb_slack.layout().addLayout(lo_slack_notify)
+
+        if API(self.core).get_server_approvals() is True:
+            state.gb_slack.layout().addLayout(lo_slack_approvals)
 
         lo_comments = QHBoxLayout()
         lo_comments.setContentsMargins(10, 5, 0, 0)
 
-        if state.className != "Export":
+        if state.className != "Export" and state.className != "USD Export":
             state.te_slackComments = QTextEdit()
             state.te_slackComments.setPlaceholderText("(Optional) Leave your Slack comments here")
             lo_comments.addWidget(state.te_slackComments)
@@ -78,6 +102,8 @@ class StateManagerUI:
                 "cb_slackUserPool",
                 "l_slackNotify",
                 "chb_slackNotify",
+                "l_approvals",
+                "cb_approvals",
                 "te_slackComments",
             ]:
                 if hasattr(state, attr):

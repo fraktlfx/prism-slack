@@ -1,74 +1,90 @@
-import os
+﻿import os
 import socket
 from pathlib import Path
 
-from prism_slack.client.slack.slack_config import SlackConfig
 from prism_slack.client.prism.ui import ServerNonWarning
-from prism_slack.server.controls import ServerControls
 from prism_slack.client.prism.ui.tray_ui import TrayUI
+from prism_slack.client.slack.slack_config import SlackConfig
+from prism_slack.server.controls import ServerControls
 
 from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QWidget, QMenu
 
 
-# Load the UI for the Slack plugin in the system tray context menu
-def trayContextMenuRequested(core: object, origin: object, menu: QWidget):
-    config = SlackConfig(core).load_config(mode="studio")
-    SlackConfig(core).check_slack_studio_options(config)
+class TrayContextMenuRequested:
+    """
+    Add Slack server controls to the system tray context menu.
 
-    server_status = config["slack"]["server"].get("status")
-    server_machine = config["slack"]["server"].get("machine")
+    Args:
+        core (object): The core application object.
+        origin (QWidget): The origin object requesting the context menu.
+        menu (QMenu): The context menu object to which Slack options will be added.
+    """
 
-    # Set the server status in the tray to "Not running" if it is empty
-    if server_status == "":
-        server_status = "Not running"
+    def __init__(self, core: object):
+        self.core = core
+        self.tray_ui: TrayUI | None = None
+        self.plugin_directory = Path(__file__).resolve().parents[4]
 
-    # Create the tray menu items
-    tray_ui = TrayUI()
-    tray_ui.create_tray_slack_ui(menu, server_status, server_machine)
+    def __call__(self, origin: QWidget, menu: QMenu):
+        config = SlackConfig(self.core).load_config(mode="studio")
+        SlackConfig(self.core).check_slack_studio_options(config)
 
-    # Get the tray menu items
-    stop_action = tray_ui.stop_server_action
-    start_action = tray_ui.start_server_action
+        server_status = config["slack"]["server"].get("status")
+        server_machine = config["slack"]["server"].get("machine")
 
-    # Connect the actions to the tray menu items
-    stop_action.triggered.connect(
-        lambda: _slack_tray_toggle(core, tray_ui, server_status, server_machine)
-    )
-    start_action.triggered.connect(
-        lambda: _slack_tray_toggle(core, tray_ui, server_status, server_machine)
-    )
+        # Set the server status in the tray to "Not running" if it is empty
+        if server_status == "":
+            server_status = "Not running"
 
+        if server_machine == "":
+            server_machine = "N/A"
 
-# Toggle the Slack menu status and actions in the system tray
-def _slack_tray_toggle(
-    core: object, tray_ui: object, server_status: str, server_machine: str
-):
-    plugin_directory = Path(__file__).resolve().parents[4]
+        # Create the tray menu items
+        self.tray_ui = TrayUI()
+        self.tray_ui.create_tray_slack_ui(menu, server_status, server_machine)
 
-    stop_server_action = tray_ui.stop_server_action
-    start_server_action = tray_ui.start_server_action
-    status_server_action = tray_ui.status_server_action
+        self._set_tray_display_state(running=(server_status == "Running"))
 
-    if server_status == "Running":
-        if server_machine == socket.gethostname():
-            print("Stopping the server")
-            ServerControls(core).stop_server()
-            stop_server_action.setEnabled(False)
-            start_server_action.setEnabled(True)
-            status_server_action.setText("Not running")
-            status_server_action.setIcon(
-                QIcon(os.path.join(plugin_directory, "Resources", "stopped.png"))
+        self.tray_ui.start_server_action.triggered.connect(self._toggle_from_tray)
+        self.tray_ui.stop_server_action.triggered.connect(self._toggle_from_tray)
+
+    def _toggle_from_tray(self):
+        if self.tray_ui is None:
+            return
+
+        config = SlackConfig(self.core).load_config(mode="studio")
+        server_status = config["slack"]["server"].get("status")
+        server_machine = config["slack"]["server"].get("machine")
+        if server_status == "Running":
+            if server_machine == socket.gethostname():
+                ServerControls(self.core).stop_server()
+                self._set_tray_display_state(running=False)
+            else:
+                ServerNonWarning().exec_()
+        else:
+            ServerControls(self.core).start_server()
+            self._set_tray_display_state(running=True)
+
+    def _set_tray_display_state(self, *, running: bool):
+        if self.tray_ui is None:
+            return
+
+        stop_action = self.tray_ui.stop_server_action
+        start_action = self.tray_ui.start_server_action
+        status_action = self.tray_ui.status_server_action
+
+        if running:
+            stop_action.setEnabled(True)
+            start_action.setEnabled(False)
+            status_action.setText("Running")
+            status_action.setIcon(
+                QIcon(os.path.join(self.plugin_directory, "Resources", "running.png"))
             )
         else:
-            dialogs = ServerNonWarning()
-            dialogs.exec_()
-    else:
-        print("Starting the server")
-        ServerControls(core).start_server()
-        stop_server_action.setEnabled(True)
-        start_server_action.setEnabled(False)
-        status_server_action.setText("Running")
-        status_server_action.setIcon(
-            QIcon(os.path.join(plugin_directory, "Resources", "running.png"))
-        )
+            stop_action.setEnabled(False)
+            start_action.setEnabled(True)
+            status_action.setText("Not running")
+            status_action.setIcon(
+                QIcon(os.path.join(self.plugin_directory, "Resources", "stopped.png"))
+            )
